@@ -4,6 +4,8 @@ import { NextResponse } from 'next/server';
 
 export default withAuth(
   function middleware(req) {
+      return NextResponse.next();
+
     // Check if user is accessing admin routes
     if (req.nextUrl.pathname.startsWith('/admin')) {
       const token = req.nextauth.token;

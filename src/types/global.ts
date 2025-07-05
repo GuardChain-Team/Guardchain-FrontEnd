@@ -160,3 +160,12 @@ export enum Channel {
   CALL_CENTER = 'CALL_CENTER',
   API = 'API'
 }
+
+export enum AlertStatus {
+  OPEN = 'OPEN',
+  UNDER_REVIEW = 'UNDER_REVIEW',  // Tambah ini
+  IN_PROGRESS = 'IN_PROGRESS',
+  RESOLVED = 'RESOLVED',
+  FALSE_POSITIVE = 'FALSE_POSITIVE',
+  ESCALATED = 'ESCALATED'
+}
