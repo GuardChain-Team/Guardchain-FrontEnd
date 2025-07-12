@@ -1,41 +1,46 @@
 // src/lib/auth/config.ts
-import { NextAuthOptions } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import { JWT } from 'next-auth/jwt';
-import { Session } from 'next-auth';
+import { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { JWT } from "next-auth/jwt";
+import { Session } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      id: 'credentials',
-      name: 'credentials',
+      id: "credentials",
+      name: "credentials",
       credentials: {
         email: {
-          label: 'Email',
-          type: 'email',
-          placeholder: 'user@example.com',
+          label: "Email",
+          type: "email",
+          placeholder: "user@example.com",
         },
         password: {
-          label: 'Password',
-          type: 'password',
+          label: "Password",
+          type: "password",
         },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Email and password are required');
+          throw new Error("Email and password are required");
         }
 
         try {
-          const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/auth/login`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: credentials.email,
-              password: credentials.password,
-            }),
-          });
+          const response = await fetch(
+            `${
+              process.env.NEXTAUTH_URL || "http://localhost:3000"
+            }/api/auth/login`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: credentials.email,
+                password: credentials.password,
+              }),
+            }
+          );
 
           const data = await response.json();
 
@@ -48,23 +53,23 @@ export const authOptions: NextAuthOptions = {
             } as any;
           }
 
-          throw new Error(data.error || 'Invalid credentials');
+          throw new Error(data.error || "Invalid credentials");
         } catch (error: any) {
-          console.error('Authentication error:', error);
-          throw new Error(error.message || 'Authentication failed');
+          console.error("Authentication error:", error);
+          throw new Error(error.message || "Authentication failed");
         }
       },
     }),
   ],
-  
+
   pages: {
-    signIn: '/login',
-    signOut: '/login',
-    error: '/login',
+    signIn: "/login",
+    signOut: "/login",
+    error: "/login",
   },
 
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
     maxAge: 24 * 60 * 60, // 24 hours
   },
 
@@ -88,5 +93,5 @@ export const authOptions: NextAuthOptions = {
     },
   },
 
-  debug: process.env.NODE_ENV === 'development',
+  debug: process.env.NODE_ENV === "development",
 };
