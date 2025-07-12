@@ -1,0 +1,182 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  firstName String?
+  lastName  String?
+  role      String   @default("ANALYST") // ADMIN, INVESTIGATOR, ANALYST, VIEWER
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  investigations Investigation[]
+  reports        Report[]
+  sessions       Session[]
+  alerts         Alert[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Transaction {
+  id              String   @id @default(cuid())
+  transactionId   String   @unique
+  amount          Float
+  currency        String   @default("USD")
+  fromAccount     String
+  toAccount       String
+  description     String?
+  timestamp       DateTime
+  status          String   @default("PENDING") // PENDING, COMPLETED, FAILED, CANCELLED
+  riskScore       Float    @default(0)
+  isBlacklisted   Boolean  @default(false)
+  isFlagged       Boolean  @default(false)
+  metadata        String?  // JSON as string
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  alerts          Alert[]
+  investigations  Investigation[]
+  analytics       Analytics[]
+
+  @@map("transactions")
+}
+
+model Alert {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  severity    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  status      String   @default("PENDING") // PENDING, INVESTIGATING, RESOLVED, FALSE_POSITIVE
+  riskScore   Float
+  category    String
+  metadata    String?  // JSON as string
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Foreign Keys
+  transactionId String?
+  assignedToId  String?
+
+  // Relations
+  transaction   Transaction?   @relation(fields: [transactionId], references: [id])
+  assignedTo    User?          @relation(fields: [assignedToId], references: [id])
+  investigation Investigation?
+
+  @@map("alerts")
+}
+
+model Investigation {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  status      String   @default("OPEN") // OPEN, IN_PROGRESS, CLOSED, ESCALATED
+  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  findings    String?
+  conclusion  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Foreign Keys
+  alertId       String? @unique
+  investigatorId String
+  transactionId String?
+
+  // Relations
+  alert         Alert?       @relation(fields: [alertId], references: [id])
+  investigator  User         @relation(fields: [investigatorId], references: [id])
+  transaction   Transaction? @relation(fields: [transactionId], references: [id])
+  reports       Report[]
+
+  @@map("investigations")
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  type        String   // INVESTIGATION, COMPLIANCE, ANALYTICS, INCIDENT
+  status      String   @default("DRAFT") // DRAFT, PENDING_REVIEW, APPROVED, PUBLISHED
+  generatedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Foreign Keys
+  authorId        String
+  investigationId String?
+
+  // Relations
+  author        User          @relation(fields: [authorId], references: [id])
+  investigation Investigation? @relation(fields: [investigationId], references: [id])
+
+  @@map("reports")
+}
+
+model Analytics {
+  id            String   @id @default(cuid())
+  metric        String
+  value         Float
+  timestamp     DateTime @default(now())
+  category      String
+  subcategory   String?
+  metadata      String?  // JSON as string
+
+  // Foreign Keys
+  transactionId String?
+
+  // Relations
+  transaction Transaction? @relation(fields: [transactionId], references: [id])
+
+  @@map("analytics")
+}
+
+model BlacklistEntry {
+  id        String   @id @default(cuid())
+  type      String   // ACCOUNT, EMAIL, IP_ADDRESS, DEVICE_ID
+  value     String   @unique
+  reason    String
+  addedBy   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("blacklist_entries")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entityType String
+  entityId  String
+  userId    String?
+  details   String?  // JSON as string
+  timestamp DateTime @default(now())
+
+  @@map("audit_logs")
+}

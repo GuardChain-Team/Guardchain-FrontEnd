@@ -1,5 +1,11 @@
 // src/types/transaction.ts
-import { BaseEntity, TransactionStatus, PaymentMethod, Channel, LocationData } from './global';
+import {
+  BaseEntity,
+  TransactionStatus,
+  PaymentMethod,
+  Channel,
+  LocationData,
+} from "./global";
 
 export interface Transaction extends BaseEntity {
   transactionId: string;
@@ -23,15 +29,15 @@ export interface Transaction extends BaseEntity {
 }
 
 export enum TransactionType {
-  TRANSFER = 'TRANSFER',
-  PAYMENT = 'PAYMENT',
-  WITHDRAWAL = 'WITHDRAWAL',
-  DEPOSIT = 'DEPOSIT',
-  REFUND = 'REFUND',
-  REVERSAL = 'REVERSAL'
+  TRANSFER = "TRANSFER",
+  PAYMENT = "PAYMENT",
+  WITHDRAWAL = "WITHDRAWAL",
+  DEPOSIT = "DEPOSIT",
+  REFUND = "REFUND",
+  REVERSAL = "REVERSAL",
 }
 
-export interface Account {
+export interface Account extends BaseEntity {
   accountId: string;
   accountNumber: string;
   accountType: AccountType;
@@ -47,24 +53,24 @@ export interface Account {
 }
 
 export enum AccountType {
-  SAVINGS = 'SAVINGS',
-  CHECKING = 'CHECKING',
-  CREDIT = 'CREDIT',
-  INVESTMENT = 'INVESTMENT',
-  BUSINESS = 'BUSINESS'
+  SAVINGS = "SAVINGS",
+  CHECKING = "CHECKING",
+  CREDIT = "CREDIT",
+  INVESTMENT = "INVESTMENT",
+  BUSINESS = "BUSINESS",
 }
 
 export enum AccountStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  SUSPENDED = 'SUSPENDED',
-  CLOSED = 'CLOSED',
-  BLOCKED = 'BLOCKED'
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  SUSPENDED = "SUSPENDED",
+  CLOSED = "CLOSED",
+  BLOCKED = "BLOCKED",
 }
 
 export interface DeviceInfo {
   deviceId: string;
-  deviceType: 'MOBILE' | 'DESKTOP' | 'TABLET' | 'UNKNOWN';
+  deviceType: "MOBILE" | "DESKTOP" | "TABLET" | "UNKNOWN";
   os: string;
   browser?: string;
   userAgent: string;
@@ -88,7 +94,7 @@ export interface RiskAssessment {
 }
 
 export interface RiskProfile {
-  level: 'LOW' | 'MEDIUM' | 'HIGH';
+  level: "LOW" | "MEDIUM" | "HIGH";
   score: number;
   factors: string[];
   lastUpdated: string;
@@ -103,7 +109,7 @@ export interface RiskProfileHistory {
 }
 
 export interface TransactionFee {
-  type: 'PROCESSING' | 'INTERCHANGE' | 'NETWORK' | 'SERVICE';
+  type: "PROCESSING" | "INTERCHANGE" | "NETWORK" | "SERVICE";
   amount: number;
   currency: string;
   description: string;

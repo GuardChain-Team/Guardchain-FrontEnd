@@ -1,5 +1,5 @@
 // src/components/ui/skeleton.tsx
-import { cn } from '@/lib/utils/helpers';
+import { cn } from "@/lib/utils/helpers";
 
 function Skeleton({
   className,
@@ -7,7 +7,7 @@ function Skeleton({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('animate-pulse rounded-md bg-muted', className)}
+      className={cn("animate-pulse rounded-md bg-muted", className)}
       {...props}
     />
   );
@@ -40,7 +40,7 @@ function SkeletonTable({ rows = 5 }: { rows?: number }) {
         <Skeleton className="h-4 w-28" />
         <Skeleton className="h-4 w-20" />
       </div>
-      
+
       {/* Table rows */}
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="flex space-x-4">
@@ -65,17 +65,17 @@ function SkeletonChart() {
         <div className="h-64 space-y-2">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="flex items-end space-x-2">
-              <Skeleton 
-                className="w-8" 
-                style={{ height: Math.random() * 200 + 50 }}
+              <Skeleton
+                className="w-8"
+                style={{ height: 50 + ((i * 25) % 200) }}
               />
-              <Skeleton 
-                className="w-8" 
-                style={{ height: Math.random() * 200 + 50 }}
+              <Skeleton
+                className="w-8"
+                style={{ height: 75 + ((i * 30) % 200) }}
               />
-              <Skeleton 
-                className="w-8" 
-                style={{ height: Math.random() * 200 + 50 }}
+              <Skeleton
+                className="w-8"
+                style={{ height: 100 + ((i * 35) % 200) }}
               />
             </div>
           ))}
@@ -107,10 +107,4 @@ function SkeletonAlert() {
   );
 }
 
-export { 
-  Skeleton, 
-  SkeletonCard, 
-  SkeletonTable, 
-  SkeletonChart, 
-  SkeletonAlert 
-};
+export { Skeleton, SkeletonCard, SkeletonTable, SkeletonChart, SkeletonAlert };

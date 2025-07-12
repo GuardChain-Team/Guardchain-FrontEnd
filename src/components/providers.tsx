@@ -1,11 +1,11 @@
 // src/components/providers.tsx
-'use client';
+"use client";
 
-import * as React from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { SessionProvider } from 'next-auth/react';
-import { ThemeProvider } from '@/components/theme-provider';
-import { WebSocketProvider } from '@/components/websocket-provider';
+import * as React from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { SessionProvider } from "next-auth/react";
+import { ThemeProvider } from "@/components/theme-provider";
+import { WebSocketProvider } from "@/components/websocket-provider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,13 +22,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <SessionProvider>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark" // ← Change to dark
-          enableSystem
-          disableTransitionOnChange
+          defaultTheme="system"
+          enableSystem={true}
+          disableTransitionOnChange={false}
+          storageKey="theme"
         >
-          <WebSocketProvider>
-            {children}
-          </WebSocketProvider>
+          <WebSocketProvider>{children}</WebSocketProvider>
         </ThemeProvider>
       </SessionProvider>
     </QueryClientProvider>

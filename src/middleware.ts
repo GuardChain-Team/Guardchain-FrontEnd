@@ -1,26 +1,24 @@
 // src/middleware.ts
-import { withAuth } from 'next-auth/middleware';
-import { NextResponse } from 'next/server';
+import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
 
 export default withAuth(
   function middleware(req) {
-      return NextResponse.next();
-
     // Check if user is accessing admin routes
-    if (req.nextUrl.pathname.startsWith('/admin')) {
+    if (req.nextUrl.pathname.startsWith("/admin")) {
       const token = req.nextauth.token;
-      
-      if (token?.role !== 'ADMIN') {
-        return NextResponse.redirect(new URL('/unauthorized', req.url));
+
+      if (token?.role !== "ADMIN") {
+        return NextResponse.redirect(new URL("/unauthorized", req.url));
       }
     }
 
     // Check if user is accessing investigator routes
-    if (req.nextUrl.pathname.startsWith('/investigator')) {
+    if (req.nextUrl.pathname.startsWith("/investigator")) {
       const token = req.nextauth.token;
-      
-      if (!['ADMIN', 'FRAUD_INVESTIGATOR'].includes(token?.role as string)) {
-        return NextResponse.redirect(new URL('/unauthorized', req.url));
+
+      if (!["ADMIN", "FRAUD_INVESTIGATOR"].includes(token?.role as string)) {
+        return NextResponse.redirect(new URL("/unauthorized", req.url));
       }
     }
 
@@ -30,8 +28,8 @@ export default withAuth(
     callbacks: {
       authorized: ({ token, req }) => {
         // Public routes
-        const publicRoutes = ['/', '/login', '/register', '/forgot-password'];
-        
+        const publicRoutes = ["/", "/login", "/register", "/forgot-password"];
+
         if (publicRoutes.includes(req.nextUrl.pathname)) {
           return true;
         }
@@ -53,6 +51,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public files (public folder)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
+    "/((?!api|_next/static|_next/image|favicon.ico|public).*)",
   ],
 };
