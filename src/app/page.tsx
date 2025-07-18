@@ -52,7 +52,7 @@ if (status === 'loading') {
           <Spinner size="lg" className="z-10" />
           <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping"></div>
         </div>
-        <p className="mt-6 text-muted-foreground">Initializing GuardChain...</p>
+        <p className="mt-6 text-muted-foreground">Initializing SI JagaDana...</p>
       </div>
     </div>
   );
@@ -84,7 +84,7 @@ if (status === 'loading') {
                 </div>
               </div>
               <div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">GuardChain</span>
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">SI JagaDana</span>
                 <div className="text-xs text-muted-foreground">AI-Powered Security</div>
               </div>
             </div>
@@ -118,13 +118,13 @@ if (status === 'loading') {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-216 lg:py-16 overflow-hidden">
+      <section className="relative py-216 lg:py-8 overflow-hidden">
         <div className="container mx-auto px-8 lg:px-12">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div className="text-center lg:text-left space-y-8">
-              <Badge className="mb-8 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-800 px-6 py-3">
+              {/* <Badge className="mb-8 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-800 px-6 py-3">
                 🚀 Now Supporting BI-FAST & QRIS
-              </Badge>
+              </Badge> */}
 
               <h1 className="text-6xl lg:text-8xl font-bold leading-tight">
                 <span className="text-foreground">Next-Gen</span>
@@ -247,7 +247,7 @@ if (status === 'loading') {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-40 bg-muted/20">
+      <section id="features" className="py-20 bg-muted/20">
         <div className="container mx-auto px-8 lg:px-12">
           <div className="text-center mb-24">
             <Badge className="mb-8 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 border-purple-200 dark:border-purple-800 px-6 py-3">
@@ -255,7 +255,7 @@ if (status === 'loading') {
             </Badge>
             <h2 className="text-6xl font-bold mb-8 leading-tight">
               <span className="text-foreground">Why Choose</span>
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> GuardChain</span>
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> SI JagaDana</span>
               <span className="text-foreground">?</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
@@ -357,7 +357,7 @@ if (status === 'loading') {
               Enterprise-Grade Security
             </h2>
             <p className="text-xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
-              Your data security is our top priority. GuardChain employs multiple layers of protection
+              Your data security is our top priority. SI JagaDana employs multiple layers of protection
               to ensure your financial data remains safe and compliant with international standards.
             </p>
           </div>
@@ -519,7 +519,7 @@ if (status === 'loading') {
      </section>
 
      {/* Testimonials Section */}
-     <section id="testimonials" className="py-40 bg-muted/20">
+     <section id="testimonials" className="py-10 bg-muted/20">
        <div className="container mx-auto px-8 lg:px-12">
          <div className="text-center mb-24">
            <Badge className="mb-8 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-800 px-6 py-3">
@@ -529,7 +529,7 @@ if (status === 'loading') {
              What Our Clients Say
            </h2>
            <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-             Join over 50+ Indonesian financial institutions that trust GuardChain 
+             Join over 50+ Indonesian financial institutions that trust SI JagaDana 
              to protect their customers and assets from sophisticated fraud attempts.
            </p>
          </div>
@@ -545,7 +545,7 @@ if (status === 'loading') {
                  ))}
                </div>
                <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
-                 "GuardChain has revolutionized our fraud detection capabilities. The AI-powered system 
+                 "SI JagaDana has revolutionized our fraud detection capabilities. The AI-powered system 
                  caught fraudulent transactions that our previous system missed, saving us millions."
                </p>
                <div className="flex items-center">
@@ -596,7 +596,7 @@ if (status === 'loading') {
                </div>
                <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
                  "Implementation was seamless and the support team is exceptional. Our fraud losses 
-                 have decreased by 85% since using GuardChain. Best investment we've made."
+                 have decreased by 85% since using SI JagaDana. Best investment we've made."
                </p>
                <div className="flex items-center">
                  <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
@@ -614,7 +614,7 @@ if (status === 'loading') {
      </section>
 
      {/* Pricing Section */}
-     <section id="pricing" className="py-40 bg-gradient-to-br from-background to-muted/20">
+     <section id="pricing" className="py-20 bg-gradient-to-br from-background to-muted/20">
        <div className="container mx-auto px-8 lg:px-12">
          <div className="text-center mb-24">
            <Badge className="mb-8 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-800 px-6 py-3">
@@ -772,7 +772,7 @@ if (status === 'loading') {
      </section>
 
      {/* CTA Section */}
-     <section className="py-40 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white relative overflow-hidden">
+     <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white relative overflow-hidden">
        <div className="container mx-auto px-8 lg:px-12 text-center relative">
          <h2 className="text-6xl lg:text-7xl font-bold mb-12 leading-tight">
            Ready to Transform Your
@@ -780,7 +780,7 @@ if (status === 'loading') {
            Fraud Detection?
          </h2>
          <p className="text-xl lg:text-2xl text-blue-100 mb-16 max-w-4xl mx-auto leading-relaxed">
-           Join over 50+ Indonesian financial institutions that trust GuardChain to protect 
+           Join over 50+ Indonesian financial institutions that trust SI JagaDana to protect 
            their customers and prevent fraud losses. Start your free trial today.
          </p>
          
@@ -834,7 +834,7 @@ if (status === 'loading') {
                  </svg>
                </div>
                <div>
-                 <span className="text-3xl font-bold">GuardChain</span>
+                 <span className="text-3xl font-bold">SI JagaDana</span>
                  <div className="text-muted-foreground text-lg">AI-Powered Fraud Detection</div>
                </div>
              </div>
@@ -887,7 +887,7 @@ if (status === 'loading') {
          <div className="border-t border-border mt-20 pt-12">
            <div className="flex flex-col md:flex-row justify-between items-center">
              <div className="text-muted-foreground text-lg mb-8 md:mb-0">
-               © 2025 GuardChain. All rights reserved. Built for Indonesian Financial Security.
+               © 2025 SI JagaDana. All rights reserved. Built for Indonesian Financial Security.
              </div>
              <div className="flex space-x-10 text-lg">
                <a href="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</a>
