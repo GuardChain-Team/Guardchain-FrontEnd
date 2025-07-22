@@ -85,12 +85,16 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                  document.documentElement.classList.add('dark')
-                } else {
+                // Default to dark mode, only go light if explicitly set to light
+                if (localStorage.theme === 'light' || (localStorage.theme === 'system' && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                   document.documentElement.classList.remove('dark')
+                } else {
+                  document.documentElement.classList.add('dark')
                 }
-              } catch (_) {}
+              } catch (_) {
+                // Fallback to dark mode
+                document.documentElement.classList.add('dark')
+              }
             `,
           }}
         />
