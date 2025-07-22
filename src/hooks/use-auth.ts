@@ -60,7 +60,7 @@ export function useAuth() {
         description: 'You have been successfully logged out',
         variant: 'success',
       });
-      router.push('/login');
+      router.push('/');
     },
   });
 

@@ -15,11 +15,7 @@ export default function HomePage() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [currentStat, setCurrentStat] = useState(0);
 
-  useEffect(() => {
-    if (status === 'authenticated' && session) {
-      router.push('/dashboard');
-    }
-  }, [status, session, router]);
+  // Removed automatic redirect to /dashboard for authenticated users
 
   useEffect(() => {
     const handleScroll = () => {

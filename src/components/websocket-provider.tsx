@@ -18,33 +18,12 @@ const WebSocketContext = React.createContext<WebSocketContextType | null>(null);
 
 export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
-  const { toast } = useToast();
 
   const { isConnected, connectionStatus, lastMessage, sendMessage } =
     useWebSocket({
       url: process.env.NEXT_PUBLIC_WEBSOCKET_URL || "ws://localhost:8000/ws",
       enabled: !!session?.user,
-      onConnect: () => {
-        toast({
-          title: "Connected",
-          description: "Real-time connection established",
-          variant: "success",
-        });
-      },
-      onDisconnect: () => {
-        toast({
-          title: "Disconnected",
-          description: "Real-time connection lost",
-          variant: "warning",
-        });
-      },
-      onError: (error) => {
-        toast({
-          title: "Connection Error",
-          description: "Failed to establish real-time connection",
-          variant: "destructive",
-        });
-      },
+      // Remove toast notifications for connect/disconnect/error
     });
 
   const value = React.useMemo(
