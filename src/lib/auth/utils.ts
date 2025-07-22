@@ -1,6 +1,7 @@
 import jwt, { SignOptions } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { NextRequest } from "next/server";
+import { AuthContext } from "@/types/auth";
 import { prisma } from "@/lib/database/prisma";
 
 const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret";
@@ -65,8 +66,10 @@ export async function getAuthenticatedUser(request: NextRequest) {
   return user;
 }
 
-export function requireAuth(handler: Function) {
-  return async (request: NextRequest, context?: any) => {
+export function requireAuth(
+  handler: (request: NextRequest, context: AuthContext) => Promise<Response>
+) {
+  return async (request: NextRequest, context?: AuthContext) => {
     const user = await getAuthenticatedUser(request);
 
     if (!user || !user.isActive) {
@@ -78,8 +81,10 @@ export function requireAuth(handler: Function) {
 }
 
 export function requireRole(roles: string[]) {
-  return function (handler: Function) {
-    return async (request: NextRequest, context?: any) => {
+  return function (
+    handler: (request: NextRequest, context: AuthContext) => Promise<Response>
+  ) {
+    return async (request: NextRequest, context?: AuthContext) => {
       const user = await getAuthenticatedUser(request);
 
       if (!user || !user.isActive) {

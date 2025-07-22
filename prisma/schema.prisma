@@ -53,6 +53,7 @@ model Transaction {
   toAccount       String
   description     String?
   timestamp       DateTime
+  location        String?  // Transaction location (e.g., "Jakarta", "Surabaya")
   status          String   @default("PENDING") // PENDING, COMPLETED, FAILED, CANCELLED
   riskScore       Float    @default(0)
   isBlacklisted   Boolean  @default(false)

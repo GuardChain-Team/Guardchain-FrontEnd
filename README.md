@@ -1194,3 +1194,11 @@ CMD ["nginx", "-g", "daemon off;"]
 **Built with ❤️ for Indonesian Financial Security**
 
 This README provides comprehensive context about the GuardChain frontend application, enabling AI assistants to understand the project requirements, architecture, and implementation details for effective assistance with development tasks.
+
+CARA RUN:
+node start-realtime.js
+
+OR
+
+In one terminal: npm run dev (starts Next.js)
+In another terminal: npm run server (starts realtime server)

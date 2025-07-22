@@ -1,8 +1,8 @@
 // src/lib/api/client.ts
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { getSession } from 'next-auth/react';
-import { apiConfig } from '@/lib/config/api';
-import { ApiError } from '@/types/global';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import { getSession } from "next-auth/react";
+import { apiConfig } from "@/lib/config/api";
+import { ApiError } from "@/types/global";
 
 // Create axios instance
 export const apiClient = axios.create({
@@ -15,7 +15,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   async (config) => {
     // Get session for client-side requests
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const session = await getSession();
       if (session?.accessToken) {
         config.headers.Authorization = `Bearer ${session.accessToken}`;
@@ -34,18 +34,26 @@ apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     return response;
   },
-  async (error: AxiosError) => {
-    const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
+  async (
+    error: AxiosError<{
+      code?: string;
+      message?: string;
+      details?: Record<string, unknown>;
+    }>
+  ) => {
+    const originalRequest = error.config as AxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
     // Handle 401 errors (unauthorized)
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       // Try to refresh token
-      if (typeof window !== 'undefined') {
-        const { signOut } = await import('next-auth/react');
+      if (typeof window !== "undefined") {
+        const { signOut } = await import("next-auth/react");
         await signOut({ redirect: false });
-        window.location.href = '/login';
+        window.location.href = "/login";
       }
 
       return Promise.reject(error);
@@ -53,8 +61,11 @@ apiClient.interceptors.response.use(
 
     // Format error response
     const apiError: ApiError = {
-      code: error.response?.data?.code || 'UNKNOWN_ERROR',
-      message: error.response?.data?.message || error.message || 'An unknown error occurred',
+      code: error.response?.data?.code || "UNKNOWN_ERROR",
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "An unknown error occurred",
       details: error.response?.data?.details,
       timestamp: new Date().toISOString(),
     };
@@ -65,18 +76,18 @@ apiClient.interceptors.response.use(
 
 // Generic API methods
 export const api = {
-  get: <T>(url: string, config?: AxiosRequestConfig) => 
+  get: <T>(url: string, config?: AxiosRequestConfig) =>
     apiClient.get<T>(url, config),
-  
-  post: <T>(url: string, data?: any, config?: AxiosRequestConfig) => 
+
+  post: <T, D = unknown>(url: string, data?: D, config?: AxiosRequestConfig) =>
     apiClient.post<T>(url, data, config),
-  
-  put: <T>(url: string, data?: any, config?: AxiosRequestConfig) => 
+
+  put: <T, D = unknown>(url: string, data?: D, config?: AxiosRequestConfig) =>
     apiClient.put<T>(url, data, config),
-  
-  patch: <T>(url: string, data?: any, config?: AxiosRequestConfig) => 
+
+  patch: <T, D = unknown>(url: string, data?: D, config?: AxiosRequestConfig) =>
     apiClient.patch<T>(url, data, config),
-  
-  delete: <T>(url: string, config?: AxiosRequestConfig) => 
+
+  delete: <T>(url: string, config?: AxiosRequestConfig) =>
     apiClient.delete<T>(url, config),
 };

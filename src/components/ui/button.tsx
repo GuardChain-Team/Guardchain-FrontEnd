@@ -33,13 +33,15 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   loading?: boolean;
+  asChild?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  function Button({ className, variant, size, loading = false, children, disabled, ...props }, ref) {
+  function Button({ asChild, className, variant, size, loading = false, children, disabled, ...props }, ref) {
+    // Ignore asChild prop for now, just render button
     return (
       <button
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(buttonVariants({ variant, size, className }))} 
         ref={ref}
         disabled={disabled || loading}
         {...props}

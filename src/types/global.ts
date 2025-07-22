@@ -30,7 +30,7 @@ export interface ApiResponse<T> {
 export interface ApiError {
   code: string;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   timestamp: string;
 }
 
@@ -39,8 +39,8 @@ export interface SearchParams {
   page?: number;
   limit?: number;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
-  filters?: Record<string, any>;
+  sortOrder?: "asc" | "desc";
+  filters?: Record<string, string | number | boolean | null>;
 }
 
 export interface LocationData {
@@ -59,21 +59,21 @@ export interface DateRange {
 }
 
 export interface HealthCheck {
-  status: 'healthy' | 'degraded' | 'unhealthy';
+  status: "healthy" | "degraded" | "unhealthy";
   timestamp: string;
   version: string;
   services: {
-    database: 'up' | 'down';
-    cache: 'up' | 'down';
-    websocket: 'up' | 'down';
-    ml_engine: 'up' | 'down';
+    database: "up" | "down";
+    cache: "up" | "down";
+    websocket: "up" | "down";
+    ml_engine: "up" | "down";
   };
 }
 
 // UI Related Types
 export interface ToastNotification {
   id: string;
-  type: 'success' | 'error' | 'warning' | 'info';
+  type: "success" | "error" | "warning" | "info";
   title: string;
   message: string;
   duration?: number;
@@ -86,7 +86,7 @@ export interface ToastNotification {
 export interface ModalState {
   isOpen: boolean;
   type?: string;
-  data?: any;
+  data?: unknown;
 }
 
 export interface LoadingState {
@@ -113,59 +113,60 @@ export interface Theme {
 
 // Enum Types
 export enum AlertSeverity {
-  LOW = 'LOW',
-  MEDIUM = 'MEDIUM',
-  HIGH = 'HIGH',
-  CRITICAL = 'CRITICAL'
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
+  CRITICAL = "CRITICAL",
 }
 
 export enum AlertStatus {
-  OPEN = 'OPEN',
-  IN_PROGRESS = 'IN_PROGRESS',
-  RESOLVED = 'RESOLVED',
-  FALSE_POSITIVE = 'FALSE_POSITIVE',
-  ESCALATED = 'ESCALATED'
+  OPEN = "OPEN",
+  UNDER_REVIEW = "UNDER_REVIEW",
+  IN_PROGRESS = "IN_PROGRESS",
+  RESOLVED = "RESOLVED",
+  FALSE_POSITIVE = "FALSE_POSITIVE",
+  ESCALATED = "ESCALATED",
 }
 
 export enum UserRole {
-  ADMIN = 'ADMIN',
-  COMPLIANCE_OFFICER = 'COMPLIANCE_OFFICER',
-  FRAUD_INVESTIGATOR = 'FRAUD_INVESTIGATOR',
-  DATA_ANALYST = 'DATA_ANALYST',
-  VIEWER = 'VIEWER'
+  ADMIN = "ADMIN",
+  COMPLIANCE_OFFICER = "COMPLIANCE_OFFICER",
+  FRAUD_INVESTIGATOR = "FRAUD_INVESTIGATOR",
+  DATA_ANALYST = "DATA_ANALYST",
+  VIEWER = "VIEWER",
 }
 
 export enum TransactionStatus {
-  PENDING = 'PENDING',
-  COMPLETED = 'COMPLETED',
-  FAILED = 'FAILED',
-  CANCELLED = 'CANCELLED',
-  BLOCKED = 'BLOCKED'
+  PENDING = "PENDING",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+  CANCELLED = "CANCELLED",
+  BLOCKED = "BLOCKED",
+}
+
+export interface DashboardMetrics {
+  totalAlerts: { value: number; change: number; trend: "up" | "down" };
+  highRiskAlerts: { value: number; change: number; trend: "up" | "down" };
+  detectionRate: { value: number; change: number; trend: "up" | "down" };
+  avgResponseTime: { value: number; change: number; trend: "up" | "down" };
+  blockedAmount: { value: number; change: number; trend: "up" | "down" };
+  falsePositiveRate: { value: number; change: number; trend: "up" | "down" };
 }
 
 export enum PaymentMethod {
-  CREDIT_CARD = 'CREDIT_CARD',
-  DEBIT_CARD = 'DEBIT_CARD',
-  BANK_TRANSFER = 'BANK_TRANSFER',
-  E_WALLET = 'E_WALLET',
-  QRIS = 'QRIS',
-  VIRTUAL_ACCOUNT = 'VIRTUAL_ACCOUNT'
+  CREDIT_CARD = "CREDIT_CARD",
+  DEBIT_CARD = "DEBIT_CARD",
+  BANK_TRANSFER = "BANK_TRANSFER",
+  E_WALLET = "E_WALLET",
+  QRIS = "QRIS",
+  VIRTUAL_ACCOUNT = "VIRTUAL_ACCOUNT",
 }
 
 export enum Channel {
-  WEB = 'WEB',
-  MOBILE_APP = 'MOBILE_APP',
-  ATM = 'ATM',
-  BRANCH = 'BRANCH',
-  CALL_CENTER = 'CALL_CENTER',
-  API = 'API'
-}
-
-export enum AlertStatus {
-  OPEN = 'OPEN',
-  UNDER_REVIEW = 'UNDER_REVIEW',  // Tambah ini
-  IN_PROGRESS = 'IN_PROGRESS',
-  RESOLVED = 'RESOLVED',
-  FALSE_POSITIVE = 'FALSE_POSITIVE',
-  ESCALATED = 'ESCALATED'
+  WEB = "WEB",
+  MOBILE_APP = "MOBILE_APP",
+  ATM = "ATM",
+  BRANCH = "BRANCH",
+  CALL_CENTER = "CALL_CENTER",
+  API = "API",
 }

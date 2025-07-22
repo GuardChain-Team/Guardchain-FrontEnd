@@ -9,23 +9,18 @@ import {
 
 export interface Transaction extends BaseEntity {
   transactionId: string;
-  senderAccountId: string;
-  receiverAccountId: string;
+  senderAccountId: string; // maps to fromAccount
+  receiverAccountId: string; // maps to toAccount
   amount: number;
   currency: string;
-  transactionType: TransactionType;
-  paymentMethod: PaymentMethod;
-  channel: Channel;
   status: TransactionStatus;
-  transactionTime: string;
+  transactionTime: string; // maps to timestamp
   description?: string;
-  reference?: string;
-  location?: LocationData;
-  deviceInfo?: DeviceInfo;
-  riskScore?: number;
-  riskAssessment?: RiskAssessment;
-  fees?: TransactionFee[];
-  metadata?: Record<string, any>;
+  location?: string;
+  riskScore: number;
+  isBlacklisted: boolean;
+  isFlagged: boolean;
+  metadata?: Record<string, string | number | boolean | null>;
 }
 
 export enum TransactionType {

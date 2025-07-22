@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     // Add alerts if requested
     if (includeAlerts && transaction.alerts.length > 0) {
       additionalData.alerts = transaction.alerts.map((alert) => ({
-        alertId: alert.alertId,
+        id: alert.id,
         title: alert.title,
         severity: alert.severity,
         status: alert.status,

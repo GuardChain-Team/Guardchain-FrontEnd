@@ -1,3 +1,5 @@
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth-options";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth/utils";
@@ -37,7 +39,11 @@ const querySchema = z.object({
     .transform((str) => (str ? new Date(str) : undefined)),
 });
 
-async function handleGetTransactions(request: NextRequest, { user }: any) {
+async function handleGetTransactions(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     const { searchParams } = new URL(request.url);
     const params = Object.fromEntries(searchParams.entries());
@@ -116,7 +122,11 @@ async function handleGetTransactions(request: NextRequest, { user }: any) {
   }
 }
 
-async function handleCreateTransaction(request: NextRequest, { user }: any) {
+async function handleCreateTransaction(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     const body = await request.json();
     const data = createTransactionSchema.parse(body);
@@ -141,7 +151,7 @@ async function handleCreateTransaction(request: NextRequest, { user }: any) {
         ...data,
         riskScore,
         status: "PENDING",
-        metadata: stringifyMetadata(data.metadata),
+        metadata: data.metadata ? stringifyMetadata(data.metadata) : "{}",
       },
     });
 
@@ -209,5 +219,4 @@ function calculateRiskScore(transaction: any): number {
   return Math.min(score, 1);
 }
 
-export const GET = requireAuth(handleGetTransactions);
-export const POST = requireAuth(handleCreateTransaction);
+export { handleGetTransactions as GET, handleCreateTransaction as POST };

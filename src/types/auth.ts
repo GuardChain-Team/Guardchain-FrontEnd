@@ -1,5 +1,19 @@
 // src/types/auth.ts
-import { BaseEntity, UserRole } from './global';
+export interface AuthContext {
+  user: DatabaseUser;
+  token?: string;
+}
+import { BaseEntity, UserRole } from "./global";
+
+export interface DatabaseUser {
+  id: string;
+  email: string;
+  username: string;
+  firstName: string | null;
+  lastName: string | null;
+  role: string;
+  isActive: boolean;
+}
 
 export interface User extends BaseEntity {
   email: string;
@@ -20,11 +34,11 @@ export interface Permission {
   name: string;
   resource: string;
   action: string;
-  conditions?: Record<string, any>;
+  conditions?: Record<string, string | number | boolean | null>;
 }
 
 export interface UserPreferences {
-  theme: 'light' | 'dark' | 'system';
+  theme: "light" | "dark" | "system";
   language: string;
   timezone: string;
   notifications: {
@@ -33,9 +47,9 @@ export interface UserPreferences {
     sms: boolean;
   };
   dashboard: {
-    layout: 'default' | 'compact' | 'detailed';
+    layout: "default" | "compact" | "detailed";
     refreshInterval: number;
-    defaultFilters: Record<string, any>;
+    defaultFilters: Record<string, string | number | boolean | null>;
   };
 }
 

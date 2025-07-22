@@ -1,10 +1,10 @@
-// src/components/fraud/alert-filters.tsx (perbaiki nama file dari aler-filters.tsx)
-'use client';
+// src/components/fraud/alert-filters.tsx
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { useState, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,51 +12,88 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
   DropdownMenuLabel,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
+} from "@/components/ui/popover";
+import { AlertSeverity, AlertStatus } from "@/types/global";
+import { AlertType } from "@/types/fraud";
+import { Calendar } from "@/components/ui/calendar";
+import { DateRange } from "react-day-picker";
 import {
   FunnelIcon,
   MagnifyingGlassIcon,
   CalendarIcon,
   XMarkIcon,
-} from '@heroicons/react/24/outline';
-import { AlertSeverity, AlertStatus } from '@/types/global';
-import { AlertType } from '@/types/fraud';
+} from "@heroicons/react/24/outline";
 
-interface AlertFiltersProps {
-  onFiltersChange: (filters: any) => void;
-  activeFilters: any;
+type FilterValue = string | string[] | DateRange | undefined;
+
+interface AlertFilters {
+  search?: string;
+  severity?: AlertSeverity | "ALL";
+  status?: AlertStatus | "ALL";
+  type?: AlertType | "ALL";
+  dateRange?: DateRange;
 }
 
-export function AlertFilters({ onFiltersChange, activeFilters }: AlertFiltersProps) {
-  const [searchTerm, setSearchTerm] = useState(activeFilters.search || '');
-  const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
-    from: undefined,
-    to: undefined,
-  });
+interface AlertFiltersProps {
+  onFiltersChange: (filters: AlertFilters) => void;
+  activeFilters: AlertFilters;
+}
 
-  const handleSearchChange = (value: string) => {
-    setSearchTerm(value);
-    onFiltersChange({ ...activeFilters, search: value });
-  };
+export function AlertFilters({
+  onFiltersChange,
+  activeFilters,
+}: AlertFiltersProps) {
+  const [searchTerm, setSearchTerm] = useState(activeFilters.search || "");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(
+    activeFilters.dateRange as DateRange
+  );
 
-  const handleFilterChange = (key: string, value: any) => {
-    onFiltersChange({ ...activeFilters, [key]: value });
-  };
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearchTerm(value);
+      onFiltersChange({ ...activeFilters, search: value });
+    },
+    [activeFilters, onFiltersChange]
+  );
 
-  const clearFilters = () => {
-    setSearchTerm('');
-    setDateRange({ from: undefined, to: undefined });
-    onFiltersChange({});
-  };
+  type FilterKey = keyof AlertFilters;
 
-  const activeFilterCount = Object.keys(activeFilters).filter(
-    key => activeFilters[key] && activeFilters[key] !== 'ALL'
+  const handleFilterChange = useCallback(
+    (key: FilterKey, value: FilterValue) => {
+      onFiltersChange({ ...activeFilters, [key]: value });
+    },
+    [activeFilters, onFiltersChange]
+  );
+
+  const handleDateRangeChange = useCallback(
+    (range: DateRange | undefined) => {
+      if (range) {
+        setDateRange(range);
+        handleFilterChange("dateRange", range);
+      }
+    },
+    [handleFilterChange]
+  );
+
+  const clearFilters = useCallback(() => {
+    setSearchTerm("");
+    setDateRange(undefined);
+    onFiltersChange({
+      search: "",
+      severity: "ALL",
+      status: "ALL",
+      type: "ALL",
+      dateRange: undefined,
+    });
+  }, [onFiltersChange]);
+
+  const activeFilterCount = Object.entries(activeFilters).filter(
+    ([key, value]) => value && value !== "ALL" && key !== "search"
   ).length;
 
   return (
@@ -89,25 +126,29 @@ export function AlertFilters({ onFiltersChange, activeFilters }: AlertFiltersPro
             <Button variant="outline" className="justify-between">
               <span className="flex items-center">
                 <FunnelIcon className="h-4 w-4 mr-2" />
-                {activeFilters.severity === 'ALL' || !activeFilters.severity 
-                  ? 'All Severities' 
+                {activeFilters.severity === "ALL" || !activeFilters.severity
+                  ? "All Severities"
                   : activeFilters.severity}
               </span>
-              {activeFilters.severity && activeFilters.severity !== 'ALL' && (
-                <Badge variant="secondary" className="ml-2">1</Badge>
+              {activeFilters.severity && activeFilters.severity !== "ALL" && (
+                <Badge variant="secondary" className="ml-2">
+                  1
+                </Badge>
               )}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>Filter by Severity</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleFilterChange('severity', 'ALL')}>
+            <DropdownMenuItem
+              onClick={() => handleFilterChange("severity", "ALL")}
+            >
               All Severities
             </DropdownMenuItem>
             {Object.values(AlertSeverity).map((severity) => (
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 key={severity}
-                onClick={() => handleFilterChange('severity', severity)}
+                onClick={() => handleFilterChange("severity", severity)}
               >
                 {severity}
               </DropdownMenuItem>
@@ -121,27 +162,31 @@ export function AlertFilters({ onFiltersChange, activeFilters }: AlertFiltersPro
             <Button variant="outline" className="justify-between">
               <span className="flex items-center">
                 <FunnelIcon className="h-4 w-4 mr-2" />
-                {activeFilters.status === 'ALL' || !activeFilters.status 
-                  ? 'All Status' 
+                {activeFilters.status === "ALL" || !activeFilters.status
+                  ? "All Status"
                   : activeFilters.status}
               </span>
-              {activeFilters.status && activeFilters.status !== 'ALL' && (
-                <Badge variant="secondary" className="ml-2">1</Badge>
+              {activeFilters.status && activeFilters.status !== "ALL" && (
+                <Badge variant="secondary" className="ml-2">
+                  1
+                </Badge>
               )}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleFilterChange('status', 'ALL')}>
+            <DropdownMenuItem
+              onClick={() => handleFilterChange("status", "ALL")}
+            >
               All Status
             </DropdownMenuItem>
             {Object.values(AlertStatus).map((status) => (
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 key={status}
-                onClick={() => handleFilterChange('status', status)}
+                onClick={() => handleFilterChange("status", status)}
               >
-                {status.replace('_', ' ')}
+                {status.replace("_", " ")}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
@@ -153,10 +198,12 @@ export function AlertFilters({ onFiltersChange, activeFilters }: AlertFiltersPro
             <Button variant="outline" className="justify-between">
               <span className="flex items-center">
                 <CalendarIcon className="h-4 w-4 mr-2" />
-                {dateRange.from ? 'Custom Range' : 'All Dates'}
+                {dateRange?.from ? "Custom Range" : "All Dates"}
               </span>
-              {dateRange.from && (
-                <Badge variant="secondary" className="ml-2">1</Badge>
+              {dateRange?.from && (
+                <Badge variant="secondary" className="ml-2">
+                  1
+                </Badge>
               )}
             </Button>
           </PopoverTrigger>
@@ -164,7 +211,7 @@ export function AlertFilters({ onFiltersChange, activeFilters }: AlertFiltersPro
             <Calendar
               mode="range"
               selected={dateRange}
-              onSelect={setDateRange}
+              onSelect={handleDateRangeChange}
               numberOfMonths={2}
             />
           </PopoverContent>
@@ -175,13 +222,18 @@ export function AlertFilters({ onFiltersChange, activeFilters }: AlertFiltersPro
       {activeFilterCount > 0 && (
         <div className="flex flex-wrap gap-2">
           {Object.entries(activeFilters).map(([key, value]) => {
-            if (!value || value === 'ALL') return null;
+            if (!value || value === "ALL" || key === "search") return null;
             return (
-              <Badge key={key} variant="secondary" className="flex items-center gap-1">
-                {key}: {String(value)}
-                <XMarkIcon 
-                  className="h-3 w-3 cursor-pointer" 
-                  onClick={() => handleFilterChange(key, 'ALL')}
+              <Badge
+                key={key}
+                variant="secondary"
+                className="flex items-center gap-1"
+              >
+                {key}:{" "}
+                {value instanceof Object ? "Custom Range" : String(value)}
+                <XMarkIcon
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={() => handleFilterChange(key as FilterKey, "ALL")}
                 />
               </Badge>
             );

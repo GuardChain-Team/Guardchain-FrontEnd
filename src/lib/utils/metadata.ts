@@ -1,6 +1,8 @@
 // Utility functions for handling metadata in SQLite (stored as JSON strings)
 
-export function stringifyMetadata(metadata: any): string | null {
+export function stringifyMetadata(
+  metadata: Record<string, string | number | boolean | null>
+): string | null {
   if (!metadata) return null;
   if (typeof metadata === "string") return metadata;
   try {
@@ -11,7 +13,9 @@ export function stringifyMetadata(metadata: any): string | null {
   }
 }
 
-export function parseMetadata(metadata: string | null): any {
+export function parseMetadata(
+  metadata: string | null
+): Record<string, string | number | boolean | null> | null {
   if (!metadata) return null;
   if (typeof metadata === "object") return metadata;
   try {
@@ -30,7 +34,7 @@ export interface TransactionMetadata {
   userAgent?: string;
   sessionId?: string;
   ipAddress?: string;
-  [key: string]: any;
+  [key: string]: string | number | boolean | null | undefined | string[];
 }
 
 // Type-safe metadata handling for alerts
@@ -40,5 +44,5 @@ export interface AlertMetadata {
   toAccount?: string;
   triggeredBy?: string;
   riskFactors?: string[];
-  [key: string]: any;
+  [key: string]: string | number | boolean | null | undefined | string[];
 }
