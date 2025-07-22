@@ -1,38 +1,33 @@
 // src/lib/config/app.ts
 import { env } from './env';
 
-export const appConfig = {
+const appConfig = {
   name: env.NEXT_PUBLIC_APP_NAME,
   version: env.NEXT_PUBLIC_APP_VERSION,
   environment: env.NEXT_PUBLIC_ENVIRONMENT,
-  
   // API Configuration
   api: {
     baseUrl: env.NEXT_PUBLIC_API_BASE_URL,
     timeout: 30000,
     retries: 3,
   },
-
   // WebSocket Configuration
   websocket: {
     url: env.NEXT_PUBLIC_WEBSOCKET_URL,
     reconnectAttempts: 5,
     reconnectInterval: 5000,
   },
-
   // Pagination defaults
   pagination: {
     defaultLimit: 20,
     maxLimit: 100,
     pageSizeOptions: [10, 20, 50, 100],
   },
-
   // Table configuration
   table: {
     defaultPageSize: 20,
     maxRows: 1000,
   },
-
   // Chart configuration
   charts: {
     defaultColors: [
@@ -50,14 +45,12 @@ export const appConfig = {
       easing: 'ease-in-out',
     },
   },
-
   // Toast configuration
   toast: {
     duration: 5000,
     maxToasts: 5,
     position: 'bottom-right' as const,
   },
-
   // File upload configuration
   fileUpload: {
     maxSize: 10 * 1024 * 1024, // 10MB
@@ -71,14 +64,12 @@ export const appConfig = {
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     ],
   },
-
   // Risk score thresholds
   riskThresholds: {
     low: 0.3,
     medium: 0.6,
     high: 0.8,
   },
-
   // Alert severity configuration
   alertSeverity: {
     LOW: {
@@ -106,14 +97,12 @@ export const appConfig = {
       borderColor: 'border-red-200',
     },
   },
-
   // Feature flags
   features: {
     analytics: env.NEXT_PUBLIC_ENABLE_ANALYTICS,
     notifications: env.NEXT_PUBLIC_ENABLE_NOTIFICATIONS,
     realtime: env.NEXT_PUBLIC_ENABLE_REALTIME,
   },
-
   // Date and time formats
   dateFormats: {
     short: 'dd/MM/yyyy',
@@ -122,14 +111,12 @@ export const appConfig = {
     datetime: 'dd/MM/yyyy HH:mm',
     time: 'HH:mm',
   },
-
   // Currency configuration
   currency: {
     default: 'IDR',
     locale: 'id-ID',
     symbol: 'Rp',
   },
-
   // Animation configuration
   animation: {
     duration: {
@@ -144,7 +131,6 @@ export const appConfig = {
       easeInOut: 'ease-in-out',
     },
   },
-
   // Breakpoints (matching Tailwind)
   breakpoints: {
     sm: 640,
@@ -154,3 +140,5 @@ export const appConfig = {
     '2xl': 1536,
   },
 } as const;
+
+export default appConfig;

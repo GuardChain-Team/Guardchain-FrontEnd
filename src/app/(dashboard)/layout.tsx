@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -54,10 +55,10 @@ export default function DashboardLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    console.log('Demo logout');
-    router.push('/');
+    logout();
   };
 
   const getInitials = (name?: string | null) => {

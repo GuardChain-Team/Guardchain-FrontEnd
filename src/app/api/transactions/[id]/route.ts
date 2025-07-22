@@ -1,3 +1,34 @@
+// PATCH: Block a suspicious transaction
+async function handleBlockTransaction(
+  request: NextRequest,
+  { params, user }: any
+) {
+  try {
+    const { id } = params;
+    const transaction = await prisma.transaction.findUnique({ where: { id } });
+    if (!transaction) {
+      return Response.json({ error: "Transaction not found" }, { status: 404 });
+    }
+    if (transaction.status === "BLOCKED") {
+      return Response.json({ error: "Transaction already blocked" }, { status: 400 });
+    }
+    const updatedTransaction = await prisma.transaction.update({
+      where: { id },
+      data: {
+        status: "BLOCKED",
+        isFlagged: true,
+        updatedAt: new Date(),
+      },
+    });
+    return Response.json({
+      message: "Transaction blocked successfully",
+      transaction: updatedTransaction,
+    });
+  } catch (error) {
+    console.error("Block transaction error:", error);
+    return Response.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
 import { NextRequest } from "next/server";
 import { requireAuth } from "@/lib/auth/utils";
 import { prisma } from "@/lib/database/prisma";
@@ -91,5 +122,7 @@ async function handleUpdateTransaction(
   }
 }
 
+
 export const GET = requireAuth(handleGetTransaction);
 export const PUT = requireAuth(handleUpdateTransaction);
+export const PATCH = requireAuth(handleBlockTransaction);

@@ -1,14 +1,12 @@
 // src/lib/config/api.ts
-import { env } from './env';
 
 export const apiConfig = {
-  baseURL: env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  
   // Endpoints
   endpoints: {
     // Authentication
@@ -21,7 +19,6 @@ export const apiConfig = {
       resetPassword: '/auth/reset-password',
       changePassword: '/auth/change-password',
     },
-
     // Fraud Management
     fraud: {
       alerts: '/fraud/alerts',
@@ -31,7 +28,6 @@ export const apiConfig = {
       patterns: '/fraud/patterns',
       models: '/fraud/models',
     },
-
     // Transactions
     transactions: {
       list: '/transactions',

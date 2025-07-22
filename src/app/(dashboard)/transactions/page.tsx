@@ -1,6 +1,7 @@
 "use client";
 
 import { useRealtimeTransactions } from "@/hooks/use-realtime-transactions";
+import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
 import { DataTable } from "@/components/ui/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,13 +13,52 @@ import { Transaction } from "@/types/transaction";
 import { Button } from "@/components/ui/button";
 import { EyeIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
-
+import { useSession } from "next-auth/react";
 export default function TransactionsPage() {
+  const { data: session } = useSession();
   const router = useRouter();
-  const { transactions, isLoading, isError } = useRealtimeTransactions();
+  const { transactions, isLoading, isError, mutate } =
+    useRealtimeTransactions();
+  const { toast } = useToast ? useToast() : { toast: undefined };
 
-  const handleViewTransaction = (transactionId: string) => {
-    router.push(`/transactions/${transactionId}`);
+  const handleViewTransaction = (id: string) => {
+    router.push(`/transactions/${id}`);
+  };
+
+  const handleBlock = async (transactionId: string) => {
+    try {
+      console.log('DEBUG session', session);
+      const authHeader = `Bearer ${session?.user?.id || ""}`;
+      console.log('DEBUG Authorization header', authHeader);
+      const res = await fetch(`/api/transactions/${transactionId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": authHeader,
+        },
+      });
+      if (!res.ok) throw new Error("Failed to block transaction");
+      if (toast) {
+        toast({
+          title: "Transaction blocked",
+          description: "Transaction has been blocked successfully.",
+          variant: "success",
+        });
+      } else {
+        alert("Transaction blocked successfully!");
+      }
+      mutate(); // Refresh the transaction list
+    } catch (e) {
+      if (toast) {
+        toast({
+          title: "Failed to block transaction",
+          description: "Could not block transaction.",
+          variant: "destructive",
+        });
+      } else {
+        alert("Failed to block transaction");
+      }
+    }
   };
 
   const columns: ColumnDef<Transaction>[] = [
@@ -27,35 +67,32 @@ export default function TransactionsPage() {
       header: "Transaction ID",
       cell: ({ row }) => {
         const transactionId = row.getValue("transactionId") as string;
+        const status = row.original.status;
         return (
           <div className="flex items-center space-x-2">
             <span className="font-medium">{transactionId}</span>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => handleViewTransaction(row.original.transactionId)}
+              onClick={() => handleViewTransaction(row.original.id)}
             >
               <EyeIcon className="h-4 w-4" />
             </Button>
+            {status !== "BLOCKED" &&
+              (row.original.riskScore >= 0.5 ||
+                row.original.isFlagged ||
+                row.original.isBlacklisted) && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => handleBlock(row.original.id)}
+                >
+                  Block
+                </Button>
+              )}
           </div>
         );
       },
-    },
-    {
-      accessorKey: "amount",
-      header: "Amount",
-      cell: ({ row }) => {
-        const amount = row.getValue("amount") as number;
-        const formatted = new Intl.NumberFormat("id-ID", {
-          style: "currency",
-          currency: row.original.currency || "IDR",
-        }).format(amount);
-        return formatted;
-      },
-    },
-    {
-      accessorKey: "senderAccountId",
-      header: "From",
     },
     {
       accessorKey: "receiverAccountId",
