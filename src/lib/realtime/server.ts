@@ -99,6 +99,7 @@ async function generateAndBroadcastTransaction() {
       });
 
       // Broadcast alert
+      console.log("[RealtimeServer] Broadcasting newAlert:", alert);
       io.emit("newAlert", alert);
     }
 

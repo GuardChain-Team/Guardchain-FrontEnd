@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
+import { io, Socket } from "socket.io-client";
 
 interface WebSocketHookProps {
   url: string;
-  onMessage?: (event: MessageEvent) => void;
+  onMessage?: (event: any) => void;
   onConnect?: () => void;
   onDisconnect?: () => void;
 }
@@ -13,33 +14,36 @@ export function useWebSocket({
   onConnect,
   onDisconnect,
 }: WebSocketHookProps) {
-  const wsRef = useRef<WebSocket | null>(null);
+  const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
     if (!url) return;
 
-    wsRef.current = new WebSocket(url);
+    socketRef.current = io(url, { transports: ["websocket"] });
 
-    wsRef.current.onopen = () => {
-      console.log("WebSocket connected");
+    socketRef.current.on("connect", () => {
+      console.log("Socket.IO connected");
       onConnect?.();
-    };
+    });
 
-    wsRef.current.onmessage = (event) => {
-      onMessage?.(event);
-    };
-
-    wsRef.current.onclose = () => {
-      console.log("WebSocket disconnected");
+    socketRef.current.on("disconnect", () => {
+      console.log("Socket.IO disconnected");
       onDisconnect?.();
-    };
+    });
+
+    // Listen for all messages
+    if (onMessage) {
+      socketRef.current.onAny((event, ...args) => {
+        onMessage({ event, data: args[0] });
+      });
+    }
 
     return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
       }
     };
   }, [url, onMessage, onConnect, onDisconnect]);
 
-  return wsRef.current;
+  return socketRef.current;
 }

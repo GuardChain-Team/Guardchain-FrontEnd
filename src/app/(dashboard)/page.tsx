@@ -30,10 +30,9 @@ import {
 
 // ...existing code...
 
-
-
 export default function DashboardPage() {
-  const { activity: recentActivities, isLoading: activityLoading } = useRealtimeActivity();
+  const { activity: recentActivities, isLoading: activityLoading } =
+    useRealtimeActivity();
   const { health: systemHealth, isLoading: healthLoading } = useSystemHealth();
   // Real-time alerts and toast
   const {
@@ -58,11 +57,11 @@ export default function DashboardPage() {
     // Calculate metrics from alerts
     const totalAlerts = alerts.length;
     const highRiskAlerts = alerts.filter(
-      (a) => a.severity === "HIGH" || a.severity === "CRITICAL"
+      (a: any) => a.severity === "HIGH" || a.severity === "CRITICAL"
     ).length;
     // No amount property, so blockedAmount is just count of blocked alerts
     const blockedAmount = alerts.filter(
-      (a) => a.status === AlertStatus.ESCALATED
+      (a: any) => a.status === AlertStatus.ESCALATED
     ).length;
     setRealTimeData((prev) => ({
       ...prev,
@@ -372,44 +371,65 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-      {/* System Health */}
-      <Card>
-        <CardHeader>
-          <CardTitle>System Health</CardTitle>
-          <CardDescription>Real-time system status</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {healthLoading ? (
-            <div>Loading...</div>
-          ) : systemHealth ? (
-            <>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">API</span>
-                <span className={`text-xs font-bold ${systemHealth.status === "healthy" ? "text-green-600" : "text-red-600"}`}>{systemHealth.status}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Database</span>
-                <span className={`text-xs font-bold ${systemHealth.database === "connected" ? "text-green-600" : "text-red-600"}`}>{systemHealth.database}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Users</span>
-                <span className="text-xs">{systemHealth.stats.users}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Transactions</span>
-                <span className="text-xs">{systemHealth.stats.transactions}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Alerts</span>
-                <span className="text-xs">{systemHealth.stats.alerts}</span>
-              </div>
-              <div className="text-xs text-gray-400 mt-2">Last checked: {new Date(systemHealth.timestamp).toLocaleTimeString()}</div>
-            </>
-          ) : (
-            <div>Failed to load system health.</div>
-          )}
-        </CardContent>
-      </Card>
+        {/* System Health */}
+        <Card>
+          <CardHeader>
+            <CardTitle>System Health</CardTitle>
+            <CardDescription>Real-time system status</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {healthLoading ? (
+              <div>Loading...</div>
+            ) : systemHealth ? (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">API</span>
+                  <span
+                    className={`text-xs font-bold ${
+                      systemHealth.status === "healthy"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {systemHealth.status}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Database</span>
+                  <span
+                    className={`text-xs font-bold ${
+                      systemHealth.database === "connected"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {systemHealth.database}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Users</span>
+                  <span className="text-xs">{systemHealth.stats.users}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Transactions</span>
+                  <span className="text-xs">
+                    {systemHealth.stats.transactions}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Alerts</span>
+                  <span className="text-xs">{systemHealth.stats.alerts}</span>
+                </div>
+                <div className="text-xs text-gray-400 mt-2">
+                  Last checked:{" "}
+                  {new Date(systemHealth.timestamp).toLocaleTimeString()}
+                </div>
+              </>
+            ) : (
+              <div>Failed to load system health.</div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Charts Section */}
@@ -471,10 +491,15 @@ export default function DashboardPage() {
               <div>Loading...</div>
             ) : recentActivities && recentActivities.length > 0 ? (
               recentActivities.map((activity, index) => (
-                <div key={activity.id || index} className="flex items-center space-x-3 py-2">
+                <div
+                  key={activity.id || index}
+                  className="flex items-center space-x-3 py-2"
+                >
                   <div
                     className={`w-2 h-2 rounded-full ${
-                      activity.type === "system" ? "bg-blue-500" : "bg-green-500"
+                      activity.type === "system"
+                        ? "bg-blue-500"
+                        : "bg-green-500"
                     }`}
                   />
                   <div className="flex-1">

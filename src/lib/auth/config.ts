@@ -78,8 +78,9 @@ export const authOptions: NextAuthOptions = {
       // Initial sign in
       if (user) {
         token.role = user.role;
+        // Use user.id as accessToken for demo/dev
+        token.accessToken = user.id;
       }
-
       return token;
     },
 
@@ -87,8 +88,8 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.id = token.sub as string;
         (session.user as any).role = token.role as string;
+        (session.user as any).accessToken = token.accessToken as string;
       }
-
       return session;
     },
   },

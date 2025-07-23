@@ -95,13 +95,13 @@ async function handleGetAnalytics(request: NextRequest, { user }: any) {
       // Transaction trends (daily)
       prisma.$queryRaw`
         SELECT 
-          DATE(created_at) as date,
+          DATE(createdAt) as date,
           COUNT(*) as count,
           SUM(amount) as total_amount,
-          AVG(risk_score) as avg_risk_score
+          AVG(riskScore) as avg_risk_score
         FROM transactions 
-        WHERE created_at >= ${startDate}
-        GROUP BY DATE(created_at)
+        WHERE createdAt >= ${startDate}
+        GROUP BY DATE(createdAt)
         ORDER BY date ASC
       `,
 
@@ -109,13 +109,13 @@ async function handleGetAnalytics(request: NextRequest, { user }: any) {
       prisma.$queryRaw`
         SELECT 
           CASE 
-            WHEN risk_score < 0.3 THEN 'Low'
-            WHEN risk_score < 0.7 THEN 'Medium'
+            WHEN riskScore < 0.3 THEN 'Low'
+            WHEN riskScore < 0.7 THEN 'Medium'
             ELSE 'High'
           END as risk_level,
           COUNT(*) as count
         FROM transactions 
-        WHERE created_at >= ${startDate}
+        WHERE createdAt >= ${startDate}
         GROUP BY risk_level
       `,
     ]);
@@ -159,7 +159,20 @@ async function handleGetAnalytics(request: NextRequest, { user }: any) {
       riskDistribution,
     };
 
-    return Response.json({ analytics });
+    // Convert BigInt values to string recursively
+    function convertBigIntToString(obj: any): any {
+      if (typeof obj === 'bigint') return obj.toString();
+      if (Array.isArray(obj)) return obj.map(convertBigIntToString);
+      if (obj && typeof obj === 'object') {
+        const newObj: any = {};
+        for (const key in obj) {
+          newObj[key] = convertBigIntToString(obj[key]);
+        }
+        return newObj;
+      }
+      return obj;
+    }
+    return Response.json(convertBigIntToString(analytics));
   } catch (error) {
     console.error("Get analytics error:", error);
     return Response.json({ error: "Internal server error" }, { status: 500 });

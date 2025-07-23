@@ -27,14 +27,14 @@ export default function TransactionsPage() {
 
   const handleBlock = async (transactionId: string) => {
     try {
-      console.log('DEBUG session', session);
+      console.log("DEBUG session", session);
       const authHeader = `Bearer ${session?.user?.id || ""}`;
-      console.log('DEBUG Authorization header', authHeader);
+      console.log("DEBUG Authorization header", authHeader);
       const res = await fetch(`/api/transactions/${transactionId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": authHeader,
+          Authorization: authHeader,
         },
       });
       if (!res.ok) throw new Error("Failed to block transaction");
