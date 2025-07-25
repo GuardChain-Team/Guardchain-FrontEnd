@@ -8,11 +8,12 @@ import { useSession } from "next-auth/react";
 let socket: Socket | null = null;
 
 export function useRealtimeAlerts() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const token = session?.user ? (session.user as any).accessToken : undefined;
+  const shouldFetch = status === "authenticated" && !!token;
   // SWR hook for fetching initial data and handling revalidation
-  const { data, error, mutate } = useSWR<any>(
-    ["/api/fraud/alerts?page=1&limit=20", token],
+  const { data, error, mutate } = useSWR<any, Error, [string, string] | null>(
+    shouldFetch ? ["/api/fraud/alerts?page=1&limit=20", token] as [string, string] : null,
     async ([url, t]: [string, string]) => {
       const response = await fetch(url, {
         headers: t ? { Authorization: `Bearer ${t}` } : {},
@@ -28,7 +29,7 @@ export function useRealtimeAlerts() {
   useEffect(() => {
     if (!socket) {
       socket = io(
-        process.env.NEXT_PUBLIC_WEBSOCKET_URL || "http://localhost:3001"
+        process.env.NEXT_PUBLIC_WEBSOCKET_URL || "http://localhost:8000"
       );
 
       socket.on("connect", () => {

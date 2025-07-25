@@ -4,6 +4,7 @@ import Image from 'next/image';
 import logoImage from '@/assets/images/icons/logo.png';
 import { FloatingChatbot } from '@/components/ui/floating-chatbot';
 import { useState } from 'react';
+import { useAnalytics } from '@/lib/hooks/use-analytics';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import Link from 'next/link';
@@ -31,9 +32,16 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 
-const navigation = [
+type NavItem = {
+  name: string;
+  href: string;
+  icon: React.ComponentType<any>;
+  badge?: React.ReactNode;
+};
+
+const navigationBase: NavItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Alerts', href: '/alerts', icon: ExclamationTriangleIcon, badge: '12' },
+  { name: 'Alerts', href: '/alerts', icon: ExclamationTriangleIcon },
   { name: 'Transactions', href: '/transactions', icon: CreditCardIcon },
   { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
   { name: 'Investigator', href: '/investigator', icon: MagnifyingGlassIcon },
@@ -49,6 +57,7 @@ const demoSession = {
   }
 };
 
+
 export default function DashboardLayout({
   children,
 }: {
@@ -58,6 +67,12 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { logout } = useAuth();
+  const { analytics } = useAnalytics();
+  // Alerts badge: show sum of high and critical alerts (all time)
+  const alertsBadge = analytics?.highRiskAlerts && analytics.highRiskAlerts > 0 ? analytics.highRiskAlerts : undefined;
+  const navigation = navigationBase.map(item =>
+    item.name === 'Alerts' ? { ...item, badge: alertsBadge } : item
+  );
 
   const handleLogout = () => {
     logout();
@@ -110,7 +125,7 @@ export default function DashboardLayout({
                 >
                   <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
                   {item.name}
-                  {item.badge && (
+                  {item.badge !== undefined && (
                     <Badge variant="destructive" className="ml-auto">
                       {item.badge}
                     </Badge>
@@ -139,28 +154,28 @@ export default function DashboardLayout({
           </div>
           <div className="mt-8 flex flex-grow flex-col">
             <nav className="flex-1 space-y-1 px-2 pb-4">
-              {navigation.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
-                      isActive
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                    }`}
-                  >
-                    <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
-                    {item.name}
-                    {item.badge && (
-                      <Badge variant="destructive" className="ml-auto">
-                        {item.badge}
-                      </Badge>
-                    )}
-                  </Link>
-                );
-              })}
+            {navigation.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
+                    isActive
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                >
+                  <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
+                  {item.name}
+                  {item.badge !== undefined && (
+                    <Badge variant="destructive" className="ml-auto">
+                      {item.badge}
+                    </Badge>
+                  )}
+                </Link>
+              );
+            })}
             </nav>
           </div>
         </div>

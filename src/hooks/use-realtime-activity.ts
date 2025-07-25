@@ -27,7 +27,7 @@ export function useRealtimeActivity() {
   useEffect(() => {
     if (!socket) {
       socket = io(
-        process.env.NEXT_PUBLIC_WEBSOCKET_URL || "http://localhost:3001"
+        process.env.NEXT_PUBLIC_WEBSOCKET_URL || "http://localhost:8000"
       );
       socket.on("connect", () => {
         console.log("Connected to WebSocket server (activity)");

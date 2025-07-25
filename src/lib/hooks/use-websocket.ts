@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
-import { io, Socket } from "socket.io-client";
+import { useEffect } from "react";
+import { getSocket, closeSocket } from "./socket";
+
 
 interface WebSocketHookProps {
   url: string;
@@ -8,42 +9,43 @@ interface WebSocketHookProps {
   onDisconnect?: () => void;
 }
 
+
 export function useWebSocket({
   url,
   onMessage,
   onConnect,
   onDisconnect,
 }: WebSocketHookProps) {
-  const socketRef = useRef<Socket | null>(null);
-
   useEffect(() => {
     if (!url) return;
+    const socket = getSocket(url);
 
-    socketRef.current = io(url, { transports: ["websocket"] });
-
-    socketRef.current.on("connect", () => {
+    socket.on("connect", () => {
       console.log("Socket.IO connected");
       onConnect?.();
     });
 
-    socketRef.current.on("disconnect", () => {
+    socket.on("disconnect", () => {
       console.log("Socket.IO disconnected");
       onDisconnect?.();
     });
 
-    // Listen for all messages
     if (onMessage) {
-      socketRef.current.onAny((event, ...args) => {
+      socket.onAny((event, ...args) => {
         onMessage({ event, data: args[0] });
       });
     }
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
+      if (onMessage) {
+        socket.offAny();
       }
+      socket.off("connect");
+      socket.off("disconnect");
+      // Do not disconnect here to preserve singleton connection
     };
   }, [url, onMessage, onConnect, onDisconnect]);
 
-  return socketRef.current;
+  // Return the singleton socket instance
+  return getSocket(url);
 }

@@ -25,7 +25,15 @@ interface Analytics {
     riskScore: number;
     createdAt: string;
   }>;
-  timeRange: {
+  // New real-time KPI fields
+  totalAlerts: number;
+  highRiskAlerts: number;
+  detectionRate: number;
+  responseTime: number;
+  blockedAmount: number;
+  falsePositives: number;
+  recentFraudAlerts: Array<any>;
+  timeRange?: {
     from: string;
     to: string;
   };
@@ -63,10 +71,9 @@ const fetcherWithToken = (token?: string) => async (url: string): Promise<Analyt
 export function useAnalytics() {
   const { data: session, status } = useSession();
   const token = session?.user ? (session.user as any).accessToken : undefined;
-  // Only fetch when session is loaded and token is present
-  const shouldFetch = status === "authenticated" && !!token;
-  const { data, error, mutate } = useSWR<Analytics, Error, [string, string | undefined] | null>(
-    shouldFetch ? ["/api/analytics", token] as [string, string | undefined] : null,
+  // Always fetch analytics, with or without token
+  const { data, error, mutate } = useSWR<Analytics, Error, [string, string | undefined]>(
+    ["/api/analytics", token],
     ([url, t]: [string, string | undefined]) => fetcherWithToken(t)(url),
     { refreshInterval: 30000 }
   );
@@ -74,18 +81,17 @@ export function useAnalytics() {
   // WebSocket connection for real-time updates
   useWebSocket({
     url: process.env.NEXT_PUBLIC_WEBSOCKET_URL || "ws://localhost:8000",
-    onMessage: async (event: any) => {
-      const message = event.data; // Socket.IO: data is already parsed
-      if (message.type === "analyticsUpdate") {
-        // Update local data immediately
-        mutate(message.analytics, false);
+    onMessage: (event: any) => {
+      if (event.event === "analyticsUpdate") {
+        // event.data is the analytics object
+        mutate(event.data, false);
       }
     },
   });
 
   return {
     analytics: data,
-    isLoading: shouldFetch && !error && !data,
+    isLoading: !error && !data,
     isError: error,
     mutate,
   };
