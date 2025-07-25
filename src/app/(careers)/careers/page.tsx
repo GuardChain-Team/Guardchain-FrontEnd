@@ -1,5 +1,6 @@
 "use client";
-
+import Image from 'next/image';
+import logoImage from '@/assets/images/icons/logo.png';
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -264,29 +265,21 @@ export default function CareersPage() {
         <div className="container mx-auto px-8 lg:px-12 py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <svg
-                    className="w-7 h-7 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                    />
-                  </svg>
-                </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-                  <div className="w-2 h-2 bg-white rounded-full"></div>
-                </div>
-              </div>
+               <div className="relative">
+      <Image 
+        src={logoImage} 
+        alt="SI JagaDana Logo" 
+        width={40} 
+        height={40} 
+        className="rounded-lg"
+      />
+      <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+        <div className="w-2 h-2 bg-white rounded-full"></div>
+      </div>
+    </div>
               <div>
                 <span 
-                  className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent cursor-pointer"
+                  className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent cursor-pointer"
                   onClick={() => router.push("/")}
                 >
                   SI JagaDana
@@ -326,7 +319,7 @@ export default function CareersPage() {
               {session ? (
                 <Button
                   onClick={() => router.push("/dashboard")}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg px-8 py-3"
+                  className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-purple-700 shadow-lg px-8 py-3"
                 >
                   Dashboard
                 </Button>
@@ -341,7 +334,7 @@ export default function CareersPage() {
                   </Button>
                   <Button
                     onClick={() => router.push("/register")}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg px-8 py-3"
+                    className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-purple-700 shadow-lg px-8 py-3"
                   >
                     Get Started
                   </Button>
@@ -353,7 +346,7 @@ export default function CareersPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-32 lg:py-40 overflow-hidden">
+      <section className="relative py-32 lg:py-8 overflow-hidden">
         <div className="container mx-auto px-8 lg:px-12">
           <div className="text-center max-w-5xl mx-auto">
             <Badge className="mb-8 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-800 px-6 py-3">
@@ -363,7 +356,7 @@ export default function CareersPage() {
             <h1 className="text-6xl lg:text-8xl font-bold leading-tight mb-8">
               <span className="text-foreground">Build the Future of</span>
               <br />
-              <span className="bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-600 via-blue-600 to-blue-400 bg-clip-text text-transparent">
                 Financial Security
               </span>
             </h1>
@@ -395,7 +388,7 @@ export default function CareersPage() {
             </Badge>
             <h2 className="text-6xl font-bold mb-8 leading-tight">
               <span className="text-foreground">More Than Just a</span>
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Job</span>
+              <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent"> Job</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
               At SI JagaDana, you'll work with cutting-edge technology while making a meaningful impact on Indonesia's financial security landscape.
@@ -427,7 +420,7 @@ export default function CareersPage() {
             </Badge>
             <h2 className="text-6xl font-bold mb-8 leading-tight">
               <span className="text-foreground">Current</span>
-              <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent"> Opportunities</span>
+              <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent"> Opportunities</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed mb-12">
               We're always looking for talented individuals to join our growing team. Find your perfect role below.
@@ -441,7 +434,7 @@ export default function CareersPage() {
                   variant={selectedDepartment === dept ? "default" : "outline"}
                   onClick={() => setSelectedDepartment(dept)}
                   className={selectedDepartment === dept 
-                    ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" 
+                    ? "bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-purple-700" 
                     : ""
                   }
                 >
@@ -484,7 +477,7 @@ export default function CareersPage() {
                       </div>
                     </div>
                     <Button 
-                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 mt-6 lg:mt-0"
+                      className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-purple-700 mt-6 lg:mt-0"
                       onClick={() => {
                         // In a real app, this would open an application form or redirect to a job board
                         alert(`Apply for ${job.title}. In a real application, this would open the application form.`);
@@ -533,7 +526,7 @@ export default function CareersPage() {
       </section>
 
       {/* Culture Section */}
-      <section className="py-32 bg-gradient-to-r from-blue-900 via-purple-900 to-blue-900 text-white relative overflow-hidden">
+      <section className="py-32 bg-gradient-to-r from-blue-900 via-blue-400 to-blue-900 text-white relative overflow-hidden">
         <div className="container mx-auto px-8 lg:px-12 relative">
           <div className="text-center mb-20">
             <Badge className="mb-8 bg-white/20 text-white border-white/30 px-6 py-3">
@@ -593,7 +586,7 @@ export default function CareersPage() {
           <h2 className="text-6xl lg:text-7xl font-bold mb-12 leading-tight">
             <span className="text-foreground">Ready to Make an</span>
             <br />
-            <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 to-blue-600 bg-clip-text text-transparent">
               Impact?
             </span>
           </h2>
@@ -609,7 +602,7 @@ export default function CareersPage() {
                // In a real app, this would open a general application form
                alert("General application form would open here.");
              }}
-             className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-xl px-16 py-8 shadow-xl"
+             className="bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-xl px-16 py-8 shadow-xl"
            >
              Send Us Your Resume
              <svg
@@ -646,7 +639,7 @@ export default function CareersPage() {
              <div className="text-muted-foreground text-xl">Rapid Career Development</div>
            </div>
            <div className="text-center">
-             <div className="text-5xl font-bold text-purple-600 dark:text-purple-400 mb-6">Global Impact</div>
+             <div className="text-5xl font-bold text-blue-400 dark:text-purple-400 mb-6">Global Impact</div>
              <div className="text-muted-foreground text-xl">Protect Millions Daily</div>
            </div>
          </div>
@@ -684,7 +677,7 @@ export default function CareersPage() {
 
            <Card className="border-0 shadow-lg text-center">
              <CardContent className="p-10">
-               <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-purple-700 rounded-full flex items-center justify-center mx-auto mb-8">
+               <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-700 rounded-full flex items-center justify-center mx-auto mb-8">
                  <span className="text-white font-bold text-2xl">2</span>
                </div>
                <h3 className="text-2xl font-bold text-foreground mb-6">Initial Screening</h3>
@@ -696,7 +689,7 @@ export default function CareersPage() {
 
            <Card className="border-0 shadow-lg text-center">
              <CardContent className="p-10">
-               <div className="w-20 h-20 bg-gradient-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center mx-auto mb-8">
+               <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-green-700 rounded-full flex items-center justify-center mx-auto mb-8">
                  <span className="text-white font-bold text-2xl">3</span>
                </div>
                <h3 className="text-2xl font-bold text-foreground mb-6">Technical Interview</h3>
@@ -739,21 +732,18 @@ export default function CareersPage() {
          <div className="grid lg:grid-cols-4 gap-16">
            <div className="col-span-2">
              <div className="flex items-center space-x-6 mb-10">
-               <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                 <svg
-                   className="w-8 h-8 text-white"
-                   fill="none"
-                   stroke="currentColor"
-                   viewBox="0 0 24 24"
-                 >
-                   <path
-                     strokeLinecap="round"
-                     strokeLinejoin="round"
-                     strokeWidth={2}
-                     d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                   />
-                 </svg>
-               </div>
+                <div className="relative">
+      <Image 
+        src={logoImage} 
+        alt="SI JagaDana Logo" 
+        width={40} 
+        height={40} 
+        className="rounded-lg"
+      />
+      <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+        <div className="w-2 h-2 bg-white rounded-full"></div>
+      </div>
+    </div>
                <div>
                  <span className="text-3xl font-bold">SI JagaDana</span>
                  <div className="text-muted-foreground text-lg">

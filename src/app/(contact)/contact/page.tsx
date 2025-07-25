@@ -1,5 +1,7 @@
 "use client";
 
+import Image from 'next/image';
+import logoImage from '@/assets/images/icons/logo.png';
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -172,29 +174,21 @@ export default function ContactPage() {
         <div className="container mx-auto px-8 lg:px-12 py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <svg
-                    className="w-7 h-7 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                    />
-                  </svg>
-                </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-                  <div className="w-2 h-2 bg-white rounded-full"></div>
-                </div>
-              </div>
+               <div className="relative">
+      <Image 
+        src={logoImage} 
+        alt="SI JagaDana Logo" 
+        width={40} 
+        height={40} 
+        className="rounded-lg"
+      />
+      <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+        <div className="w-2 h-2 bg-white rounded-full"></div>
+      </div>
+    </div>
               <div>
                 <span 
-                  className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent cursor-pointer"
+                  className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-600 bg-clip-text text-transparent cursor-pointer"
                   onClick={() => router.push("/")}
                 >
                   SI JagaDana
@@ -234,7 +228,7 @@ export default function ContactPage() {
               {session ? (
                 <Button
                   onClick={() => router.push("/dashboard")}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg px-8 py-3"
+                  className="bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 shadow-lg px-8 py-3"
                 >
                   Dashboard
                 </Button>
@@ -249,7 +243,7 @@ export default function ContactPage() {
                   </Button>
                   <Button
                     onClick={() => router.push("/register")}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg px-8 py-3"
+                    className="bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 shadow-lg px-8 py-3"
                   >
                     Get Started
                   </Button>
@@ -261,7 +255,7 @@ export default function ContactPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-32 lg:py-40 overflow-hidden">
+      <section className="relative py-32 lg:py-8 overflow-hidden">
         <div className="container mx-auto px-8 lg:px-12">
           <div className="text-center max-w-5xl mx-auto">
             <Badge className="mb-8 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-800 px-6 py-3">
@@ -271,7 +265,7 @@ export default function ContactPage() {
             <h1 className="text-6xl lg:text-8xl font-bold leading-tight mb-8">
               <span className="text-foreground">Let's Secure Your</span>
               <br />
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-600 via-blue-400 to-blue-800 bg-clip-text text-transparent">
                 Financial Future
               </span>
             </h1>
@@ -525,7 +519,7 @@ export default function ContactPage() {
       </section>
 
       {/* Office Locations Section */}
-      <section className="py-32 bg-gradient-to-r from-blue-900 via-purple-900 to-blue-900 text-white relative overflow-hidden">
+      <section className="py-32 bg-gradient-to-r from-blue-900 via-blue-400 to-blue-900 text-white relative overflow-hidden">
         <div className="container mx-auto px-8 lg:px-12 relative">
           <div className="text-center mb-20">
             <Badge className="mb-8 bg-white/20 text-white border-white/30 px-6 py-3">
@@ -639,7 +633,7 @@ export default function ContactPage() {
      </section>
 
      {/* CTA Section */}
-     <section className="py-32 bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 text-white relative overflow-hidden">
+     <section className="py-32 bg-gradient-to-r from-blue-800 via-blue-400 to-blue-900 text-white relative overflow-hidden">
        <div className="container mx-auto px-8 lg:px-12 text-center relative">
          <h2 className="text-6xl lg:text-7xl font-bold mb-12 leading-tight">
            Ready to Get Started?
@@ -677,7 +671,7 @@ export default function ContactPage() {
                // Scroll to contact form
                document.querySelector('form')?.scrollIntoView({ behavior: 'smooth' });
              }}
-             className="border-2 border-white text-white hover:bg-white hover:text-blue-600 text-xl px-16 py-8"
+             className="border-2 border-white text-blue-600 hover:bg-white hover:text-blue-600 text-xl px-16 py-8"
            >
              Schedule Demo
            </Button>
@@ -706,21 +700,18 @@ export default function ContactPage() {
          <div className="grid lg:grid-cols-4 gap-16">
            <div className="col-span-2">
              <div className="flex items-center space-x-6 mb-10">
-               <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                 <svg
-                   className="w-8 h-8 text-white"
-                   fill="none"
-                   stroke="currentColor"
-                   viewBox="0 0 24 24"
-                 >
-                   <path
-                     strokeLinecap="round"
-                     strokeLinejoin="round"
-                     strokeWidth={2}
-                     d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                   />
-                 </svg>
-               </div>
+                <div className="relative">
+      <Image 
+        src={logoImage} 
+        alt="SI JagaDana Logo" 
+        width={40} 
+        height={40} 
+        className="rounded-lg"
+      />
+      <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+        <div className="w-2 h-2 bg-white rounded-full"></div>
+      </div>
+    </div>
                <div>
                  <span className="text-3xl font-bold">SI JagaDana</span>
                  <div className="text-muted-foreground text-lg">
