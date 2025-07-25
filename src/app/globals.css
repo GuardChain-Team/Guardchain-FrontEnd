@@ -266,3 +266,69 @@ body {
   border-left: 4px solid hsl(var(--fraud-low));
   background-color: hsl(var(--fraud-low) / 0.1);
 }
+
+/* Tambahkan di akhir file globals.css */
+
+/* Floating Chatbot Enhanced Styles */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in-up 0.3s ease-out;
+}
+
+/* Smooth scrollbar untuk chat messages */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 2px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Enhanced pulse animation */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Backdrop blur fallback */
+@supports not (backdrop-filter: blur(10px)) {
+  .backdrop-blur-sm {
+    background-color: hsl(var(--card) / 0.95);
+  }
+}
+
+/* Mobile responsiveness untuk floating chatbot */
+@media (max-width: 640px) {
+  .floating-chatbot-card {
+    width: calc(100vw - 2rem);
+    max-width: 320px;
+    height: 400px;
+  }
+}

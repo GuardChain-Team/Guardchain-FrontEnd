@@ -19,8 +19,8 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "GuardChain - AI-Powered Fraud Detection",
-    template: "%s | GuardChain",
+    default: "JagaDana - AI-Powered Fraud Detection",
+    template: "%s | JagaDana",
   },
   description:
     "Comprehensive AI-powered fraud detection platform for Indonesian financial institutions",
@@ -31,30 +31,30 @@ export const metadata: Metadata = {
     "banking",
     "Indonesia",
   ],
-  authors: [{ name: "GuardChain Team" }],
-  creator: "GuardChain",
-  publisher: "GuardChain",
+  authors: [{ name: "JagaDana Team" }],
+  creator: "JagaDana",
+  publisher: "JagaDana",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://guardchain.ai"),
+  metadataBase: new URL("https://JagaDana.ai"),
   openGraph: {
     type: "website",
     locale: "id_ID",
-    url: "https://guardchain.ai",
-    title: "GuardChain - AI-Powered Fraud Detection",
+    url: "https://JagaDana.ai",
+    title: "SI JagaDana - AI-Powered Fraud Detection",
     description:
       "Comprehensive AI-powered fraud detection platform for Indonesian financial institutions",
-    siteName: "GuardChain",
+    siteName: "JagaDana",
   },
   twitter: {
     card: "summary_large_image",
-    title: "GuardChain - AI-Powered Fraud Detection",
+    title: "JagaDana - AI-Powered Fraud Detection",
     description:
       "Comprehensive AI-powered fraud detection platform for Indonesian financial institutions",
-    creator: "@guardchain",
+    creator: "@JagaDana",
   },
   robots: {
     index: true,

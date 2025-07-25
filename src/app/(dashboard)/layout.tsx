@@ -1,6 +1,8 @@
 // src/app/(dashboard)/layout.tsx
 'use client';
-
+import Image from 'next/image';
+import logoImage from '@/assets/images/icons/logo.png';
+import { FloatingChatbot } from '@/components/ui/floating-chatbot';
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
@@ -79,11 +81,15 @@ export default function DashboardLayout({
         <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-card border-r">
           <div className="flex h-16 items-center justify-between px-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">GC</span>
-              </div>
-              <span className="text-xl font-bold text-foreground">GuardChain</span>
-            </div>
+  <Image 
+    src={logoImage} 
+    alt="SI JagaDana Logo" 
+    width={32} 
+    height={32} 
+    className="rounded-lg"
+  />
+  <span className="text-xl font-bold text-foreground">SI JagaDana</span>
+</div>
             <Button variant="ghost" size="sm" onClick={() => setSidebarOpen(false)}>
               <XMarkIcon className="h-6 w-6" />
             </Button>
@@ -121,11 +127,15 @@ export default function DashboardLayout({
         <div className="flex flex-col flex-grow border-r border-border bg-card pt-5">
           <div className="flex items-center flex-shrink-0 px-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">GC</span>
-              </div>
-              <span className="text-xl font-bold text-foreground">GuardChain</span>
-            </div>
+  <Image 
+    src={logoImage} 
+    alt="SI JagaDana Logo" 
+    width={32} 
+    height={32} 
+    className="rounded-lg"
+  />
+  <span className="text-xl font-bold text-foreground">SI JagaDana</span>
+</div>
           </div>
           <div className="mt-8 flex flex-grow flex-col">
             <nav className="flex-1 space-y-1 px-2 pb-4">
@@ -234,6 +244,9 @@ export default function DashboardLayout({
           {children}
         </main>
       </div>
+    
+      {/* Floating Chatbot - tambahkan ini */}
+      <FloatingChatbot />
     </div>
   );
 }

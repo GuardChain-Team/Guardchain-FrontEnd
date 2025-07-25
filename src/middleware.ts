@@ -28,7 +28,7 @@ export default withAuth(
     callbacks: {
       authorized: ({ token, req }) => {
         // Public routes
-        const publicRoutes = ["/", "/login", "/register", "/forgot-password"];
+        const publicRoutes = ["/", "/login", "/register", "/forgot-password", "/about-us", "/careers", "/contact"];
 
         if (publicRoutes.includes(req.nextUrl.pathname)) {
           return true;
