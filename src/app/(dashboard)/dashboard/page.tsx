@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { useSystemHealth } from "@/hooks/use-system-health";
 import { useRealtimeAlerts } from "@/hooks/use-realtime-alerts";
 import { useRealtimeTransactions } from "@/hooks/use-realtime-transactions";
@@ -10,8 +11,11 @@ import { AlertTrendsChart } from "@/components/charts/alert-trends-chart";
 import { SimplePieChart } from "@/components/charts/pie-chart";
 import { SimpleBarChart } from "@/components/charts/bar-chart";
 import { SimpleAreaChart } from "@/components/charts/area-chart";
+import { BlockTrendAreaChart } from "@/components/charts/block-trend-area-chart";
 import { RealTimeLineChart } from "@/components/charts/real-time-chart";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
 
 function getSeverityColor(severity: string) {
   switch (severity) {
@@ -26,16 +30,12 @@ function getSeverityColor(severity: string) {
   }
 }
 
-export default function DashboardPage() {
-  const { alerts, isLoading: alertsLoading } = useRealtimeAlerts();
-  const { health: systemHealth, isLoading: healthLoading } = useSystemHealth();
-  const { transactions, isLoading: transactionsLoading } =
-    useRealtimeTransactions();
-  const { activity: recentActivity, isLoading: activityLoading } =
-    useRealtimeActivity();
 
-  const store = useStore();
-  const { analytics, isLoading: analyticsLoading } = useAnalytics();
+export default function DashboardPage() {
+  const { analytics, isLoading: analyticsLoading, mutate } = useAnalytics();
+  const { health: systemHealth, isLoading: healthLoading } = useSystemHealth();
+
+  const router = useRouter();
 
   // Fallback dummy analytics data if real data is not available
   const fallbackAnalytics = {
@@ -44,25 +44,35 @@ export default function DashboardPage() {
       { status: "BLOCKED", _count: 12 },
       { status: "APPROVED", _count: 88 },
     ],
-    recentTransactions: [
-      { id: "1", transactionId: "TX1", amount: 1000, currency: "USD", status: "BLOCKED", riskScore: 0.9, createdAt: "2025-07-23T04:00:00Z" },
-      { id: "2", transactionId: "TX2", amount: 500, currency: "USD", status: "APPROVED", riskScore: 0.3, createdAt: "2025-07-23T04:10:00Z" },
-      { id: "3", transactionId: "TX3", amount: 2000, currency: "USD", status: "BLOCKED", riskScore: 0.8, createdAt: "2025-07-23T04:20:00Z" },
-      { id: "4", transactionId: "TX4", amount: 700, currency: "USD", status: "APPROVED", riskScore: 0.2, createdAt: "2025-07-23T04:30:00Z" },
-    ],
+    recentTransactions: [],
+    totalAlerts: 0,
+    highRiskAlerts: 0,
+    detectionRate: 0,
+    responseTime: 0,
+    blockedAmount: 0,
+    falsePositives: 0,
+    recentFraudAlerts: [],
   };
   const analyticsData = analytics || fallbackAnalytics;
+  // Only show the last 50 alerts, sorted by most recent
+  const recentFraudAlertsSorted = [...(analyticsData.recentFraudAlerts || [])].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 50);
 
-  // KPI calculation from real-time alerts
-  const totalAlerts = alerts ? alerts.length : 0;
-  const highRiskAlerts = alerts
-    ? alerts.filter((a: any) => a.severity === "HIGH" || a.severity === "CRITICAL").length
+  // KPIs from real-time analytics
+  // Total alerts: all alerts
+  const totalAlerts = analyticsData.totalAlerts || 0;
+  // High risk: all time, from backend
+  const highRiskAlerts = analyticsData.highRiskAlerts || 0;
+  const detectionRate = analyticsData.detectionRate ? Math.round(analyticsData.detectionRate * 100) : 0;
+  const responseTime = analyticsData.responseTime || 0;
+  // Blocked transactions count
+  const blockedTransactions = analyticsData.statusDistribution
+    ? analyticsData.statusDistribution.find((s: any) => s.status === 'BLOCKED')?._count || 0
     : 0;
-  // Placeholder for other KPIs
-  const detectionRate = 98.5;
-  const avgResponseTime = 2.1;
-  const blockedAmount = 2500000;
-  const falsePositiveRate = 1.2;
+  const recentFraudAlerts = analyticsData.recentFraudAlerts || [];
+
+  // Block button state indexed by alert ID
+  const [blockLoading, setBlockLoading] = React.useState<{ [id: string]: boolean }>({});
+  const [blockError, setBlockError] = React.useState<{ [id: string]: string | null }>({});
 
   // Block transaction handler
   const handleBlockTransaction = async (transactionId: string) => {
@@ -102,51 +112,29 @@ export default function DashboardPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-        <div className="p-4 rounded-lg shadow bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 flex flex-col items-start">
-          <span className="text-sm font-medium text-zinc-500 mb-1">
-            Total Alerts
-          </span>
-          <span className="text-2xl font-bold text-zinc-900 dark:text-white">
-            {totalAlerts}
-          </span>
+        <div className="p-4 rounded-lg shadow bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 flex flex-col items-start min-w-0">
+          <span className="text-sm font-medium text-zinc-500 mb-1">Total Alerts</span>
+          <span className="text-2xl font-bold text-zinc-900 dark:text-white truncate">{totalAlerts}</span>
         </div>
-        <div className="p-4 rounded-lg shadow bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 flex flex-col items-start">
-          <span className="text-sm font-medium text-zinc-500 mb-1">
-            High Risk
-          </span>
-          <span className="text-2xl font-bold text-red-600 dark:text-red-400">
-            {highRiskAlerts}
-          </span>
+        <div className="p-4 rounded-lg shadow bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 flex flex-col items-start min-w-0">
+          <span className="text-sm font-medium text-zinc-500 mb-1">High Risk</span>
+          <span className="text-2xl font-bold text-red-600 dark:text-red-400 truncate">{highRiskAlerts}</span>
         </div>
-        <div className="p-4 rounded-lg shadow bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 flex flex-col items-start">
-          <span className="text-sm font-medium text-zinc-500 mb-1">
-            Detection Rate
-          </span>
-          <span className="text-2xl font-bold text-green-600 dark:text-green-400">
-            {detectionRate}%
-          </span>
+        <div className="p-4 rounded-lg shadow bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 flex flex-col items-start min-w-0">
+          <span className="text-sm font-medium text-zinc-500 mb-1">Detection Rate</span>
+          <span className="text-2xl font-bold text-green-600 dark:text-green-400 truncate">{detectionRate}%</span>
         </div>
-        <div className="p-4 rounded-lg shadow bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 flex flex-col items-start">
-          <span className="text-sm font-medium text-zinc-500 mb-1">
-            Response Time
-          </span>
-          <span className="text-2xl font-bold">{avgResponseTime}s</span>
+        <div className="p-4 rounded-lg shadow bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 flex flex-col items-start min-w-0">
+          <span className="text-sm font-medium text-zinc-500 mb-1">Response Time</span>
+          <span className="text-2xl font-bold truncate">{Number(responseTime).toLocaleString(undefined, { maximumFractionDigits: 2 })}s</span>
         </div>
-        <div className="p-4 rounded-lg shadow bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 flex flex-col items-start">
-          <span className="text-sm font-medium text-zinc-500 mb-1">
-            Blocked Amount
-          </span>
-          <span className="text-2xl font-bold">
-            {blockedAmount.toLocaleString()}
-          </span>
+        <div className="p-4 rounded-lg shadow bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 flex flex-col items-start min-w-0">
+          <span className="text-sm font-medium text-zinc-500 mb-1">Blocked Transactions</span>
+          <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 truncate">{blockedTransactions}</span>
         </div>
-        <div className="p-4 rounded-lg shadow bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 flex flex-col items-start">
-          <span className="text-sm font-medium text-zinc-500 mb-1">
-            False Positive
-          </span>
-          <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            {falsePositiveRate}%
-          </span>
+        <div className="p-4 rounded-lg shadow bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 flex flex-col items-start min-w-0">
+          <span className="text-sm font-medium text-zinc-500 mb-1">False Positives</span>
+          <span className="text-2xl font-bold text-yellow-500 dark:text-yellow-400 truncate">{analyticsData.falsePositives || 0}</span>
         </div>
       </div>
 
@@ -154,56 +142,104 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
         {/* Recent Alerts */}
         <div className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Recent Fraud Alerts</h2>
-            <button className="px-3 py-1 rounded bg-zinc-100 dark:bg-zinc-800 text-sm font-medium border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition">
-              View All
-            </button>
-          </div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">Recent Fraud Alerts</h2>
+          <Button
+            variant="secondary"
+            className="relative flex items-center gap-2"
+            onClick={() => router.push('/alerts')}
+          >
+            View All
+          </Button>
+        </div>
           <div className="space-y-2 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700 pr-1">
-            {alertsLoading ? (
+            {analyticsLoading ? (
               <div>Loading...</div>
-            ) : alerts && alerts.length > 0 ? (
-              alerts.slice(0, 5).map((alert: any) => (
-                <div
-                  key={alert.id}
-                  className="p-4 border rounded-lg flex flex-col md:flex-row md:items-center md:justify-between bg-white dark:bg-[#181f2a] border-zinc-200 dark:border-zinc-800 shadow hover:bg-zinc-50 dark:hover:bg-[#232b3a] transition"
-                >
-                  <div className="flex flex-col md:flex-row md:items-center gap-2">
-                    <span className="font-semibold text-zinc-900 dark:text-white">
-                      {alert.alertId || alert.id}
-                    </span>
-                    <span
-                      className={`ml-2 px-2 py-1 rounded text-xs font-bold ${getSeverityColor(
-                        alert.severity
-                      )}`}
-                    >
-                      {alert.severity}
-                    </span>
-                    <span className="ml-2 text-xs text-zinc-500">
-                      {alert.alertType || alert.type}
-                    </span>
+            ) : recentFraudAlertsSorted && recentFraudAlertsSorted.length > 0 ? (
+              <div className="space-y-2 max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700 pr-1">
+                {recentFraudAlertsSorted.map((alert: any) => (
+                  <div
+                    key={alert.id}
+                    className="p-4 border rounded-lg flex flex-col md:flex-row md:items-center md:justify-between bg-white dark:bg-[#181f2a] border-zinc-200 dark:border-zinc-800 shadow hover:bg-zinc-50 dark:hover:bg-[#232b3a] transition"
+                  >
+                    <div className="flex flex-col md:flex-row md:items-center gap-2">
+                      <span className="font-semibold text-zinc-900 dark:text-white">
+                        {alert.title || alert.id}
+                      </span>
+                      <span
+                        className={`ml-2 px-2 py-1 rounded text-xs font-bold ${getSeverityColor(
+                          alert.severity
+                        )}`}
+                      >
+                        {alert.severity}
+                      </span>
+                      <span className="ml-2 text-xs text-zinc-500">
+                        {alert.category || alert.type}
+                      </span>
+                      {/* Block button for HIGH/CRITICAL alerts that are not already blocked */}
+                      {(alert.severity === "HIGH" || alert.severity === "CRITICAL") && alert.status !== "Blocked" && (
+                        <button
+                          className="ml-2 px-3 py-1 rounded bg-red-500 text-white text-xs font-semibold hover:bg-red-700 transition disabled:opacity-50"
+                          disabled={!!blockLoading[alert.id]}
+                          onClick={async () => {
+                            setBlockLoading((prev) => ({ ...prev, [alert.id]: true }));
+                            setBlockError((prev) => ({ ...prev, [alert.id]: null }));
+                            try {
+                              const res = await fetch(`/api/alerts/${alert.id}/block`, { method: "PATCH" });
+                              if (!res.ok) {
+                                let errorMsg = "Failed to block alert";
+                                const text = await res.text();
+                                try {
+                                  const data = JSON.parse(text);
+                                  errorMsg = data.error || errorMsg;
+                                } catch (jsonErr) {
+                                  // Not JSON, log raw text (likely HTML error page)
+                                  console.error("Block API non-JSON error:", text);
+                                  errorMsg = text.slice(0, 200);
+                                }
+                                throw new Error(errorMsg);
+                              }
+                              if (typeof mutate === 'function') mutate();
+                            } catch (err: any) {
+                              setBlockError((prev) => ({ ...prev, [alert.id]: err.message || "Failed to block alert" }));
+                              window.alert(err.message || "Failed to block alert");
+                            } finally {
+                              setBlockLoading((prev) => ({ ...prev, [alert.id]: false }));
+                            }
+                          }}
+                        >
+                          {blockLoading[alert.id] ? "Blocking..." : "Block"}
+                        </button>
+                      )}
+                      {alert.status === "Blocked" && (
+                        <span className="ml-2 px-2 py-1 rounded text-xs font-bold bg-gray-400 text-white">Blocked</span>
+                      )}
+                      {blockError[alert.id] && (
+                        <span className="ml-2 text-xs text-red-500">{blockError[alert.id]}</span>
+                      )}
+                    </div>
+                    <div className="text-xs text-zinc-500 mt-2 md:mt-0">
+                      {alert.createdAt
+                        ? new Date(alert.createdAt).toLocaleTimeString()
+                        : "-"}
+                    </div>
                   </div>
-                  <div className="text-xs text-zinc-500 mt-2 md:mt-0">
-                    {alert.createdAt
-                      ? new Date(alert.createdAt).toLocaleTimeString()
-                      : "-"}
-                  </div>
-                </div>
-              ))
+                ))}
+              </div>
             ) : (
               <div>No alerts found.</div>
             )}
           </div>
         </div>
         {/* System Health */}
-        <div className="bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 rounded-lg shadow p-4">
-          <h3 className="text-lg font-semibold mb-2">System Health</h3>
-          <div className="space-y-2">
+        <div className="bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 rounded-lg shadow p-4 flex flex-col h-full justify-between min-h-[220px]">
+          <h3 className="text-lg font-semibold mb-4">System Health</h3>
+          <div className="flex flex-col flex-1 justify-evenly gap-2">
             {healthLoading || !systemHealth ? (
               <div>Loading...</div>
             ) : (
               <>
+                {/* API Health */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span
@@ -223,17 +259,10 @@ export default function DashboardPage() {
                     {systemHealth.message}
                   </div>
                 </div>
+                {/* Database Health */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span
-                      className={`w-2 h-2 rounded-full ${
-                        systemHealth.database === "healthy"
-                          ? "bg-green-500"
-                          : systemHealth.database === "degraded"
-                          ? "bg-yellow-500"
-                          : "bg-red-500"
-                      }`}
-                    ></span>
+                    <span className="w-2 h-2 rounded-full bg-orange-400"></span>
                     <span className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
                       Database
                     </span>
@@ -242,7 +271,26 @@ export default function DashboardPage() {
                     {systemHealth.database}
                   </div>
                 </div>
-                {/* Add more health metrics if available in API */}
+                {/* WebSocket Health (demo: always active) */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+                      WebSocket
+                    </span>
+                  </div>
+                  <div className="text-xs text-zinc-500">active</div>
+                </div>
+                {/* Realtime Engine Health (demo: always healthy) */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+                    <span className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+                      Realtime Engine
+                    </span>
+                  </div>
+                  <div className="text-xs text-zinc-500">healthy</div>
+                </div>
               </>
             )}
           </div>
@@ -251,62 +299,66 @@ export default function DashboardPage() {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+        {/* First row: 2 charts side by side */}
         <div className="bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 rounded-lg shadow p-4 flex flex-col gap-8">
-          <h3 className="text-lg font-semibold mb-2">
-            Risk Distribution (Pie)
-          </h3>
+          <h3 className="text-lg font-semibold mb-2">Risk Distribution (Pie)</h3>
           {!analyticsData.riskDistribution ? (
-            <div>Loading...</div>
+            <div>Loading analytics...</div>
           ) : (
-            <SimplePieChart
-              data={[
-                { name: "High", value: analyticsData.riskDistribution.high ?? 0 },
-                {
-                  name: "Medium",
-                  value: analyticsData.riskDistribution.medium ?? 0,
-                },
-                { name: "Low", value: analyticsData.riskDistribution.low ?? 0 },
-              ]}
-            />
-          )}
-          <h3 className="text-lg font-semibold mb-2">Block Count (Bar)</h3>
-          {!analyticsData.statusDistribution ? (
-            <div>Loading...</div>
-          ) : (
-            <SimpleBarChart
-              data={analyticsData.statusDistribution.map((s: any) => ({
-                name: s.status,
-                value: s._count,
-              }))}
-            />
+            <>
+              <SimplePieChart
+                data={[
+                  { name: "High", value: analyticsData.riskDistribution.high ?? 0 },
+                  { name: "Medium", value: analyticsData.riskDistribution.medium ?? 0 },
+                  { name: "Low", value: analyticsData.riskDistribution.low ?? 0 },
+                ]}
+              />
+            </>
           )}
         </div>
         <div className="bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 rounded-lg shadow p-4 flex flex-col gap-8">
           <h3 className="text-lg font-semibold mb-2">Block Trend (Area)</h3>
-          {/* Area chart: gunakan alertTrends dari AlertTrendsChart jika ingin lebih advance, atau analytics.recentTransactions jika ada time series */}
+          <BlockTrendAreaChart />
+        </div>
+      </div>
+      <div className="mt-6">
+        {/* Second row: Real-time Alerts full width */}
+        <div className="bg-white dark:bg-[#181f2a] border border-zinc-200 dark:border-zinc-800 rounded-lg shadow p-4 flex flex-col gap-8 w-full">
+          <h3 className="text-lg font-semibold mb-2">Real-time Alerts (Last 6 Hours)</h3>
           {!analyticsData.recentTransactions ? (
-            <div>Loading...</div>
+            <div>Loading analytics...</div>
           ) : (
-            <SimpleAreaChart
-              data={analyticsData.recentTransactions.map((t: any) => ({
-                name: t.createdAt.slice(0, 10),
-                value: t.status === "BLOCKED" ? 1 : 0,
-              }))}
-            />
-          )}
-          <h3 className="text-lg font-semibold mb-2">
-            Real-time Alerts (Line)
-          </h3>
-          {/* RealTimeLineChart: gunakan recentAlerts dari useRealtimeAlerts jika ingin time series, atau analytics.recentTransactions */}
-          {!analyticsData.recentTransactions ? (
-            <div>Loading...</div>
-          ) : (
-            <RealTimeLineChart
-              data={analyticsData.recentTransactions.map((t: any) => ({
-                name: t.createdAt.slice(11, 16),
-                value: t.riskScore,
-              }))}
-            />
+            <>
+              <RealTimeLineChart
+                data={analyticsData.recentTransactions
+                  .filter((t: any) => {
+                    const now = new Date();
+                    const created = new Date(t.createdAt);
+                    return now.getTime() - created.getTime() <= 6 * 60 * 60 * 1000;
+                  })
+                  .map((t: any) => {
+                    const d = new Date(t.createdAt);
+                    // Format: 'Jul 23, 14:00' or '23:00' if same day
+                    const now = new Date();
+                    let label;
+                    if (
+                      d.getDate() !== now.getDate() ||
+                      d.getMonth() !== now.getMonth() ||
+                      d.getFullYear() !== now.getFullYear()
+                    ) {
+                      label = d.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    } else {
+                      label = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    }
+                    return {
+                      name: label,
+                      value: t.riskScore,
+                    };
+                  })
+                }
+                height={350}
+              />
+            </>
           )}
         </div>
       </div>

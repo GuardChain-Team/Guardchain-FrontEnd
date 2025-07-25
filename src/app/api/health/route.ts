@@ -10,7 +10,7 @@ export async function GET() {
 
     return NextResponse.json({
       status: "healthy",
-      message: "GuardChain Backend is running successfully!",
+      message: "Running Successfully",
       database: "connected",
       timestamp: new Date().toISOString(),
       stats: {

@@ -82,6 +82,10 @@ model Alert {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // Real-time analytics fields
+  detected    Boolean  @default(false)
+  responseTime Float?  // in seconds, nullable
+
   // Foreign Keys
   transactionId String?
   assignedToId  String?

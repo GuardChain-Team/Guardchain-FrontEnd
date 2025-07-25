@@ -1,7 +1,31 @@
-// src/app/(dashboard)/alerts/page.tsx
-'use client';
+"use client";
+// Utility: Severity color
+const getSeverityColor = (severity: AlertSeverity) => {
+  switch (severity) {
+    case AlertSeverity.CRITICAL:
+      return 'destructive';
+    case AlertSeverity.HIGH:
+      return 'warning';
+    case AlertSeverity.MEDIUM:
+      return 'secondary';
+    case AlertSeverity.LOW:
+      return 'outline';
+    default:
+      return 'outline';
+  }
+};
+
+// Handler stubs
+const handleViewAlert = (alertId: string) => {
+  // TODO: Implement view logic
+};
+
+const handleAlertAction = (alertId: string, action: string) => {
+  // TODO: Implement action logic
+};
 
 import { useState, useEffect } from 'react';
+import { useRealtimeAlerts } from '@/lib/hooks/use-analytics';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -37,274 +61,35 @@ import { AlertSeverity, AlertStatus } from '@/types/global';
 import { AlertType, FraudAlert } from '@/types/fraud';
 import { useRouter } from 'next/navigation'; // Tambah import ini
 
-// Mock data untuk alerts
-const mockAlerts: FraudAlert[] = [
-  {
-    id: '1',
-    alertId: 'ALERT-2025-001',
-    transactionId: 'TXN-1234567890',
-    accountId: 'ACC-9876543210',
-    alertType: AlertType.AMOUNT_ANOMALY,
-    severity: AlertSeverity.CRITICAL,
-    status: AlertStatus.OPEN,
-    riskScore: 0.95,
-    riskFactors: [
-      {
-        id: '1',
-        type: 'Amount Deviation',
-        value: '500%',
-        weight: 0.8,
-        description: 'Transaksi 5x lebih besar dari rata-rata user',
-        severity: AlertSeverity.HIGH
-      },
-      {
-        id: '2',
-        type: 'Time Pattern',
-        value: 'Off-hours',
-        weight: 0.6,
-        description: 'Transaksi dilakukan di luar jam operasional',
-        severity: AlertSeverity.MEDIUM
-      }
-    ],
-    description: 'Transaksi senilai Rp 50,000,000 yang jauh melebihi pola normal pengguna (rata-rata Rp 2,500,000)',
-    assignedTo: 'John Doe',
-    detectedAt: '2025-01-05T10:30:00Z',
-    modelVersion: 'v2.1.5',
-    confidence: 0.95,
-    tags: ['high-value', 'pattern-break', 'urgent'],
-    createdAt: '2025-01-05T10:30:00Z',
-    updatedAt: '2025-01-05T10:30:00Z'
-  },
-  {
-    id: '2',
-    alertId: 'ALERT-2025-002',
-    transactionId: 'TXN-2345678901',
-    accountId: 'ACC-8765432109',
-    alertType: AlertType.NETWORK_RISK,
-    severity: AlertSeverity.HIGH,
-    status: AlertStatus.UNDER_REVIEW, // ⚠️ Perlu menambahkan UNDER_REVIEW ke enum
-    riskScore: 0.87,
-    riskFactors: [
-      {
-        id: '3',
-        type: 'Suspicious Network',
-        value: 'Known Fraud Ring',
-        weight: 0.9,
-        description: 'Akun terhubung dengan jaringan fraud yang dikenal',
-        severity: AlertSeverity.CRITICAL
-      }
-    ],
-    description: 'Akun berinteraksi dengan jaringan yang terlibat dalam 15 kasus fraud sebelumnya',
-    assignedTo: 'Jane Smith',
-    detectedAt: '2025-01-05T09:15:00Z',
-    modelVersion: 'v2.1.5',
-    confidence: 0.87,
-    tags: ['network-fraud', 'repeat-offender'],
-    createdAt: '2025-01-05T09:15:00Z',
-    updatedAt: '2025-01-05T10:45:00Z'
-  },
-  {
-    id: '3',
-    alertId: 'ALERT-2025-003',
-    transactionId: 'TXN-3456789012',
-    accountId: 'ACC-7654321098',
-    alertType: AlertType.VELOCITY_CHECK,
-    severity: AlertSeverity.MEDIUM,
-    status: AlertStatus.RESOLVED,
-    riskScore: 0.72,
-    riskFactors: [
-      {
-        id: '4',
-        type: 'Transaction Frequency',
-        value: '25 transactions/hour',
-        weight: 0.7,
-        description: 'Frekuensi transaksi melebihi batas normal',
-        severity: AlertSeverity.MEDIUM
-      }
-    ],
-    description: 'User melakukan 25 transaksi dalam 1 jam (normal: 3-5 transaksi/jam)',
-    resolvedAt: '2025-01-05T11:00:00Z',
-    detectedAt: '2025-01-05T08:30:00Z',
-    modelVersion: 'v2.1.5',
-    confidence: 0.72,
-    tags: ['velocity', 'resolved'],
-    createdAt: '2025-01-05T08:30:00Z',
-    updatedAt: '2025-01-05T11:00:00Z'
-  },
-  {
-    id: '4',
-    alertId: 'ALERT-2025-004',
-    transactionId: 'TXN-4567890123',
-    accountId: 'ACC-6543210987',
-    alertType: AlertType.GEOLOCATION_RISK,
-    severity: AlertSeverity.HIGH,
-    status: AlertStatus.ESCALATED,
-    riskScore: 0.83,
-    riskFactors: [
-      {
-        id: '5',
-        type: 'Geographic Anomaly',
-        value: 'Jakarta → Medan (1 hour)',
-        weight: 0.8,
-        description: 'Impossible travel: 2 transaksi di kota berbeda dalam waktu singkat',
-        severity: AlertSeverity.HIGH
-      }
-    ],
-    description: 'Transaksi di Jakarta dan Medan dalam selang 1 jam (impossible travel)',
-    assignedTo: 'Mike Johnson',
-    detectedAt: '2025-01-05T07:45:00Z',
-    modelVersion: 'v2.1.5',
-    confidence: 0.83,
-    tags: ['geolocation', 'impossible-travel', 'escalated'],
-    createdAt: '2025-01-05T07:45:00Z',
-    updatedAt: '2025-01-05T12:15:00Z'
-  },
-  {
-    id: '5',
-    alertId: 'ALERT-2025-005',
-    transactionId: 'TXN-5678901234',
-    accountId: 'ACC-5432109876',
-    alertType: AlertType.DEVICE_FINGERPRINT,
-    severity: AlertSeverity.MEDIUM,
-    status: AlertStatus.OPEN,
-    riskScore: 0.68,
-    riskFactors: [
-      {
-        id: '6',
-        type: 'Device Risk',
-        value: 'Unknown Device',
-        weight: 0.6,
-        description: 'Login dari device yang tidak pernah digunakan sebelumnya',
-        severity: AlertSeverity.MEDIUM
-      }
-    ],
-    description: 'Login dan transaksi dari device baru tanpa verifikasi tambahan',
-    detectedAt: '2025-01-05T12:20:00Z',
-    modelVersion: 'v2.1.5',
-    confidence: 0.68,
-    tags: ['device', 'new-device'],
-    createdAt: '2025-01-05T12:20:00Z',
-    updatedAt: '2025-01-05T12:20:00Z'
-  },
-  {
-    id: '6',
-    alertId: 'ALERT-2025-006',
-    transactionId: 'TXN-6789012345',
-    accountId: 'ACC-4321098765',
-    alertType: AlertType.ML_PREDICTION,
-    severity: AlertSeverity.LOW,
-    status: AlertStatus.FALSE_POSITIVE,
-    riskScore: 0.45,
-    riskFactors: [
-      {
-        id: '7',
-        type: 'ML Anomaly Score',
-        value: '0.45',
-        weight: 0.4,
-        description: 'Model ML mendeteksi slight anomaly dalam pola transaksi',
-        severity: AlertSeverity.LOW
-      }
-    ],
-    description: 'AI model mendeteksi anomali ringan yang kemudian dikonfirmasi sebagai transaksi normal',
-    resolvedAt: '2025-01-05T13:30:00Z',
-    detectedAt: '2025-01-05T12:45:00Z',
-    modelVersion: 'v2.1.5',
-    confidence: 0.45,
-    tags: ['ml-prediction', 'false-positive'],
-    createdAt: '2025-01-05T12:45:00Z',
-    updatedAt: '2025-01-05T13:30:00Z'
-  }
-];
-
-// Stats untuk summary cards
-const alertStats = {
-  total: mockAlerts.length,
-  critical: mockAlerts.filter(a => a.severity === AlertSeverity.CRITICAL).length,
-  high: mockAlerts.filter(a => a.severity === AlertSeverity.HIGH).length,
-  medium: mockAlerts.filter(a => a.severity === AlertSeverity.MEDIUM).length,
-  low: mockAlerts.filter(a => a.severity === AlertSeverity.LOW).length,
-  open: mockAlerts.filter(a => a.status === AlertStatus.OPEN).length,
-  underReview: mockAlerts.filter(a => a.status === AlertStatus.UNDER_REVIEW).length,
-  resolved: mockAlerts.filter(a => a.status === AlertStatus.RESOLVED).length,
-  escalated: mockAlerts.filter(a => a.status === AlertStatus.ESCALATED).length,
-  falsePositive: mockAlerts.filter(a => a.status === AlertStatus.FALSE_POSITIVE).length,
-};
-
 export default function AlertsPage() {
-  const [alerts, setAlerts] = useState<FraudAlert[]>(mockAlerts);
-  const [filteredAlerts, setFilteredAlerts] = useState<FraudAlert[]>(mockAlerts);
+  const { alerts: realtimeAlerts, isLoading, mutate } = useRealtimeAlerts();
+  const [filteredAlerts, setFilteredAlerts] = useState<FraudAlert[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSeverity, setSelectedSeverity] = useState<AlertSeverity | 'ALL'>('ALL');
   const [selectedStatus, setSelectedStatus] = useState<AlertStatus | 'ALL'>('ALL');
-  const router = useRouter(); // Tambah hook router
+  const router = useRouter();
 
-    // Tambah function untuk navigasi
-  const handleViewAlert = (alertId: string) => {
-    router.push(`/alerts/${alertId}`);
-  };
-
-  const handleViewAlertInNewTab = (alertId: string) => {
-    window.open(`/alerts/${alertId}`, '_blank');
-  };
-
-
-  // Filter alerts based on search and filters
   useEffect(() => {
-    let filtered = alerts;
-
-    // Search filter
+    if (!realtimeAlerts) return;
+    let filtered = realtimeAlerts;
     if (searchTerm) {
-      filtered = filtered.filter(alert =>
+      filtered = filtered.filter((alert: FraudAlert) =>
         alert.alertId.toLowerCase().includes(searchTerm.toLowerCase()) ||
         alert.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         alert.transactionId.toLowerCase().includes(searchTerm.toLowerCase()) ||
         alert.accountId.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-
-    // Severity filter
     if (selectedSeverity !== 'ALL') {
-      filtered = filtered.filter(alert => alert.severity === selectedSeverity);
+      filtered = filtered.filter((alert: FraudAlert) => alert.severity === selectedSeverity);
     }
-
-    // Status filter
     if (selectedStatus !== 'ALL') {
-      filtered = filtered.filter(alert => alert.status === selectedStatus);
+      filtered = filtered.filter((alert: FraudAlert) => alert.status === selectedStatus);
     }
-
     setFilteredAlerts(filtered);
-  }, [alerts, searchTerm, selectedSeverity, selectedStatus]);
+  }, [realtimeAlerts, searchTerm, selectedSeverity, selectedStatus]);
 
-  // Simulate real-time updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // Randomly update some alert timestamps to simulate real-time
-      setAlerts(prevAlerts => 
-        prevAlerts.map(alert => {
-          if (Math.random() < 0.1) { // 10% chance to update
-            return {
-              ...alert,
-              updatedAt: new Date().toISOString()
-            };
-          }
-          return alert;
-        })
-      );
-    }, 30000); // Update every 30 seconds
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const getSeverityColor = (severity: AlertSeverity) => {
-    switch (severity) {
-      case AlertSeverity.CRITICAL: return 'destructive';
-      case AlertSeverity.HIGH: return 'destructive';
-      case AlertSeverity.MEDIUM: return 'default';
-      case AlertSeverity.LOW: return 'secondary';
-      default: return 'outline';
-    }
-  };
-
+  // Utility functions
   const getStatusColor = (status: AlertStatus) => {
     switch (status) {
       case AlertStatus.OPEN: return 'destructive';
@@ -354,7 +139,6 @@ export default function AlertsPage() {
     const diffMs = now.getTime() - alertTime.getTime();
     const diffMinutes = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMinutes / 60);
-    
     if (diffMinutes < 60) {
       return `${diffMinutes} menit yang lalu`;
     } else if (diffHours < 24) {
@@ -365,27 +149,21 @@ export default function AlertsPage() {
     }
   };
 
-  const handleAlertAction = (alertId: string, action: string) => {
-    setAlerts(prevAlerts =>
-      prevAlerts.map(alert => {
-        if (alert.id === alertId) {
-          switch (action) {
-            case 'resolve':
-              return { ...alert, status: AlertStatus.RESOLVED, resolvedAt: new Date().toISOString() };
-            case 'escalate':
-              return { ...alert, status: AlertStatus.ESCALATED };
-            case 'false_positive':
-              return { ...alert, status: AlertStatus.FALSE_POSITIVE, resolvedAt: new Date().toISOString() };
-            default:
-              return alert;
-          }
-        }
-        return alert;
-      })
-    );
+  // Summary stats from real-time alerts
+  const alertStats = {
+    total: realtimeAlerts ? realtimeAlerts.length : 0,
+    critical: realtimeAlerts ? realtimeAlerts.filter((a: FraudAlert) => a.severity === AlertSeverity.CRITICAL).length : 0,
+    high: realtimeAlerts ? realtimeAlerts.filter((a: FraudAlert) => a.severity === AlertSeverity.HIGH).length : 0,
+    medium: realtimeAlerts ? realtimeAlerts.filter((a: FraudAlert) => a.severity === AlertSeverity.MEDIUM).length : 0,
+    low: realtimeAlerts ? realtimeAlerts.filter((a: FraudAlert) => a.severity === AlertSeverity.LOW).length : 0,
+    open: realtimeAlerts ? realtimeAlerts.filter((a: FraudAlert) => a.status === AlertStatus.OPEN).length : 0,
+    underReview: realtimeAlerts ? realtimeAlerts.filter((a: FraudAlert) => a.status === AlertStatus.UNDER_REVIEW).length : 0,
+    resolved: realtimeAlerts ? realtimeAlerts.filter((a: FraudAlert) => a.status === AlertStatus.RESOLVED).length : 0,
+    escalated: realtimeAlerts ? realtimeAlerts.filter((a: FraudAlert) => a.status === AlertStatus.ESCALATED).length : 0,
+    falsePositive: realtimeAlerts ? realtimeAlerts.filter((a: FraudAlert) => a.status === AlertStatus.FALSE_POSITIVE).length : 0,
   };
 
-  // Rest of the JSX code remains the same...
+  // ...existing JSX code...
   return (
     <div className="p-6 space-y-6 bg-background">
       {/* Header */}
@@ -401,7 +179,7 @@ export default function AlertsPage() {
             Live Monitoring
           </Badge>
           <span className="text-sm text-muted-foreground">
-            {filteredAlerts.length} of {alerts.length} alerts
+            {filteredAlerts.length} of {realtimeAlerts ? realtimeAlerts.length : 0} alerts
           </span>
         </div>
       </div>
@@ -572,7 +350,7 @@ export default function AlertsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {filteredAlerts.map((alert) => (
+            {filteredAlerts.map((alert: FraudAlert) => (
               <div
                 key={alert.id}
                 className="border border-border rounded-lg p-4 hover:bg-accent/50 transition-colors"

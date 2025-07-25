@@ -58,6 +58,11 @@ async function main() {
   for (let i = 1; i <= 50; i++) {
     const amount = Math.random() * 100000;
     const riskScore = Math.random();
+    // For detection rate: 75-80% of alerts will be detected
+    const detectedChance = Math.random();
+    const isDetected = detectedChance < (Math.random() * 0.05 + 0.75); // 75-80%
+    // For response time: only set if detected
+    const responseTime = isDetected ? Math.floor(Math.random() * 30) + 10 : null; // 10-40s
     const timestamp = new Date(
       Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000
     ); // Last 30 days
@@ -87,29 +92,37 @@ async function main() {
 
     transactions.push(transaction);
 
-    // Create alerts for high-risk transactions
-    if (riskScore > 0.7) {
-      await prisma.alert.create({
-        data: {
-          title: `High-risk transaction detected`,
-          description: `Transaction ${
-            transaction.transactionId
-          } has a risk score of ${riskScore.toFixed(2)}`,
-          severity: riskScore > 0.9 ? "CRITICAL" : "HIGH",
-          riskScore,
-          category: "FRAUD_DETECTION",
-          transactionId: transaction.id,
-          assignedToId: [investigator.id, analyst.id][
-            Math.floor(Math.random() * 2)
-          ],
-          metadata: JSON.stringify({
-            amount: transaction.amount,
-            fromAccount: transaction.fromAccount,
-            toAccount: transaction.toAccount,
-          }),
-        },
-      });
+    // Create alerts for all transactions with severity based on riskScore
+    let severity = "LOW";
+    if (riskScore > 0.9) {
+      severity = "CRITICAL";
+    } else if (riskScore > 0.7) {
+      severity = "HIGH";
+    } else if (riskScore > 0.3) {
+      severity = "MEDIUM";
     }
+    await prisma.alert.create({
+      data: {
+        title: `${severity}-risk transaction detected`,
+        description: `Transaction ${
+          transaction.transactionId
+        } has a risk score of ${riskScore.toFixed(2)}`,
+        severity,
+        riskScore,
+        category: "FRAUD_DETECTION",
+        transactionId: transaction.id,
+        assignedToId: [investigator.id, analyst.id][
+          Math.floor(Math.random() * 2)
+        ],
+        metadata: JSON.stringify({
+          amount: transaction.amount,
+          fromAccount: transaction.fromAccount,
+          toAccount: transaction.toAccount,
+        }),
+        detected: isDetected,
+        responseTime: responseTime,
+      },
+    });
   }
 
   console.log(`Created ${transactions.length} transactions`);

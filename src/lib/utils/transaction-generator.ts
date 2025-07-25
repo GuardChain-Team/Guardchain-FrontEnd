@@ -1,3 +1,4 @@
+// ...existing code up to the first generateTransactionBatch function...
 import { faker } from "@faker-js/faker";
 import type { TransactionInput } from "@/types/models";
 
@@ -36,7 +37,6 @@ export function generateRealisticTransaction(): TransactionInput {
   };
 }
 
-// Generates a batch of transactions for testing
 export function generateTransactionBatch(count: number): TransactionInput[] {
   return Array.from({ length: count }, () => generateRealisticTransaction());
 }
