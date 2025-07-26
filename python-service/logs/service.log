@@ -1,0 +1,47 @@
+2025-07-26 14:04:27,765 - INFO - Model loaded successfully
+2025-07-26 14:04:27,766 - INFO - Model version: unknown
+2025-07-26 14:04:27,787 - INFO - server listening on 0.0.0.0:8001
+2025-07-26 14:04:27,788 - INFO - WebSocket server started on port 8001
+2025-07-26 14:04:28,793 - ERROR - Error connecting to TypeScript server: did not receive a valid HTTP response
+2025-07-26 14:04:29,614 - INFO - Model loaded successfully
+2025-07-26 14:04:29,615 - INFO - Model version: unknown
+2025-07-26 14:05:02,590 - INFO - Model loaded successfully
+2025-07-26 14:05:02,591 - INFO - Model version: unknown
+2025-07-26 14:05:02,629 - INFO - server listening on 0.0.0.0:8001
+2025-07-26 14:05:02,630 - INFO - WebSocket server started on port 8001
+2025-07-26 14:05:03,637 - ERROR - Error connecting to TypeScript server: did not receive a valid HTTP response
+2025-07-26 14:05:04,385 - INFO - Model loaded successfully
+2025-07-26 14:05:04,386 - INFO - Model version: unknown
+2025-07-26 14:05:38,003 - INFO - Model loaded successfully
+2025-07-26 14:05:38,004 - INFO - Model version: unknown
+2025-07-26 14:05:38,025 - INFO - server listening on 0.0.0.0:8002
+2025-07-26 14:05:38,025 - INFO - WebSocket server started on port 8001
+2025-07-26 14:05:39,031 - ERROR - Error connecting to TypeScript server: did not receive a valid HTTP response
+2025-07-26 14:05:39,622 - INFO - Model loaded successfully
+2025-07-26 14:05:39,622 - INFO - Model version: unknown
+2025-07-26 14:06:36,476 - INFO - Model loaded successfully
+2025-07-26 14:06:36,477 - INFO - Model version: unknown
+2025-07-26 14:06:38,565 - INFO - Model loaded successfully
+2025-07-26 14:06:38,566 - INFO - Model version: unknown
+2025-07-26 14:06:53,002 - INFO - Model loaded successfully
+2025-07-26 14:06:53,003 - INFO - Model version: unknown
+2025-07-26 14:06:53,036 - INFO - server listening on 0.0.0.0:8002
+2025-07-26 14:06:53,039 - INFO - WebSocket server started on port 8002
+2025-07-26 14:06:54,045 - ERROR - Error connecting to TypeScript server: did not receive a valid HTTP response
+2025-07-26 14:06:54,591 - INFO - Model loaded successfully
+2025-07-26 14:06:54,591 - INFO - Model version: unknown
+2025-07-26 14:08:43,906 - INFO - Model loaded successfully
+2025-07-26 14:08:43,906 - INFO - Model version: unknown
+2025-07-26 14:08:46,413 - INFO - Model loaded successfully
+2025-07-26 14:08:46,413 - INFO - Model version: unknown
+2025-07-26 14:10:10,636 - INFO - Model loaded successfully
+2025-07-26 14:10:10,636 - INFO - Model version: unknown
+2025-07-26 14:10:10,756 - ERROR - aiohttp not installed -- cannot make HTTP requests!
+2025-07-26 14:10:13,051 - INFO - Model loaded successfully
+2025-07-26 14:10:13,052 - INFO - Model version: unknown
+2025-07-26 14:12:50,612 - INFO - Model loaded successfully
+2025-07-26 14:12:50,613 - INFO - Model version: unknown
+2025-07-26 14:12:51,009 - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x73a336907560>
+2025-07-26 14:12:52,508 - INFO - Model loaded successfully
+2025-07-26 14:12:52,508 - INFO - Model version: unknown
