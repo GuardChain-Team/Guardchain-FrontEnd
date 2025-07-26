@@ -64,6 +64,10 @@ import { useRouter } from 'next/navigation'; // Tambah import ini
 export default function AlertsPage() {
   const { alerts: realtimeAlerts, isLoading, mutate } = useRealtimeAlerts();
   const [filteredAlerts, setFilteredAlerts] = useState<FraudAlert[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const alertsPerPage = 5;
+  const totalPages = Math.ceil(filteredAlerts.length / alertsPerPage);
+  const paginatedAlerts = filteredAlerts.slice((currentPage - 1) * alertsPerPage, currentPage * alertsPerPage);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSeverity, setSelectedSeverity] = useState<AlertSeverity | 'ALL'>('ALL');
   const [selectedStatus, setSelectedStatus] = useState<AlertStatus | 'ALL'>('ALL');
@@ -350,11 +354,13 @@ export default function AlertsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {filteredAlerts.map((alert: FraudAlert) => (
+            {paginatedAlerts.map((alert: FraudAlert) => (
+              // ...existing code for rendering each alert...
               <div
                 key={alert.id}
                 className="border border-border rounded-lg p-4 hover:bg-accent/50 transition-colors"
               >
+                {/* ...existing code for each alert... */}
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-4 flex-1">
                     {/* Alert Type Icon */}
@@ -415,14 +421,14 @@ export default function AlertsPage() {
                       {/* Risk Factors */}
                       <div className="mt-3">
                         <div className="flex flex-wrap gap-2">
-                          {alert.riskFactors.slice(0, 3).map((factor) => (
+                          {(alert.riskFactors ? alert.riskFactors : []).slice(0, 3).map((factor) => (
                             <Badge key={factor.id} variant="outline" className="text-xs">
                               {factor.type}: {factor.value}
                             </Badge>
                           ))}
-                          {alert.riskFactors.length > 3 && (
+                          {(alert.riskFactors ? alert.riskFactors : []).length > 3 && (
                             <Badge variant="outline" className="text-xs">
-                              +{alert.riskFactors.length - 3} more
+                              +{(alert.riskFactors ? alert.riskFactors : []).length - 3} more
                             </Badge>
                           )}
                         </div>
@@ -432,7 +438,7 @@ export default function AlertsPage() {
                       {alert.assignedTo && (
                         <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
                           <UserIcon className="h-4 w-4" />
-                          Assigned to: {alert.assignedTo}
+                          Assigned to: {alert.assignedTo.username || alert.assignedTo.email || "User"}
                         </div>
                       )}
                     </div>
@@ -496,6 +502,21 @@ export default function AlertsPage() {
                 ? 'Try adjusting your filters or search terms.'
                 : 'All systems are operating normally.'}
             </p>
+          </div>
+        )}
+        {/* Pagination Buttons */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-6 gap-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Button
+                key={page}
+                variant={page === currentPage ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </Button>
+            ))}
           </div>
         )}
       </div>

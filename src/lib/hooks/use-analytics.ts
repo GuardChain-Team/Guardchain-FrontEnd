@@ -98,11 +98,12 @@ export function useAnalytics() {
 }
 
 
+import { FraudAlert } from "@/types/fraud";
 export function useRealtimeAlerts() {
   const { data: session, status } = useSession();
   const token = session?.user ? (session.user as any).accessToken : undefined;
   const shouldFetch = status === "authenticated" && !!token;
-  const { data, error, mutate } = useSWR<Analytics, Error, [string, string] | null>(
+  const { data, error, mutate } = useSWR<FraudAlert[], Error, [string, string] | null>(
     shouldFetch ? ["/api/alerts", token] as [string, string] : null,
     async ([url, t]: [string, string]) => {
       const response = await fetch(url, {
